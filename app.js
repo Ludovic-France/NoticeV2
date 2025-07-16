@@ -1365,7 +1365,7 @@ function appliquerRisquesSelectionnes() {
     }
 }
 
-// --- Fonctions de Menu Tableau et de Pagination (existantes) ---
+// --- Fonctions de Menu Tableau ---
 function showTableMenu(e, obj, rowIdx, colIdx) {
     let cellData = obj.rows[rowIdx][colIdx];
     if (cellData === null) return;
@@ -1397,8 +1397,8 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         };
         menu.appendChild(item);
     }
-    alignItem("Aligner à gauche", "left");
-    alignItem("Centrer horizontalement", "center");
+    alignItem("|≡  | Aligner à gauche", "left");
+    alignItem("| ≡ |Centrer horizontalement", "center");
     function structuralItem(label, fn) {
         let item = document.createElement('div');
         item.innerText = label;
@@ -1425,18 +1425,23 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         obj.headerShaded = !obj.headerShaded;
     }));
     menu.appendChild(document.createElement('hr'));
-    menu.appendChild(structuralItem("Ajouter colonne à droite", () => {
+	menu.appendChild(menuItem("|↔| Forcer largeur colonne à 60px", () => {
+		obj.colWidths[colIdx] = 60;
+	}));
+	menu.appendChild(document.createElement('hr'));
+    menu.appendChild(structuralItem("➕|| Ajouter colonne à droite", () => {
         obj.rows.forEach(row => row.splice(colIdx + 1, 0, ""));
         const w = obj.colWidths[colIdx]; // Problème potentiel si colIdx est la dernière
         obj.colWidths.splice(colIdx + 1, 0, w); // Duplique la largeur, normalisation nécessaire après
         normalizeColWidths(obj); // Appel à la normalisation
         }));
-    menu.appendChild(structuralItem("Ajouter ligne dessous", () => {
+    menu.appendChild(structuralItem("➕_ Ajouter ligne dessous", () => {
         let newRow = obj.rows[0].map(() => "");
         obj.rows.splice(rowIdx + 1, 0, newRow);
         }));
-   if (obj.rows[0].length > 1) {
-        menu.appendChild(structuralItem("Supprimer colonne", () => {
+	menu.appendChild(document.createElement('hr'));
+	if (obj.rows[0].length > 1) {
+        menu.appendChild(structuralItem("|❌| Supprimer colonne", () => {
             for (let r = 0; r < obj.rows.length; r++) {
                 let cd = obj.rows[r][colIdx];
                 if (cd === null) {
@@ -1463,12 +1468,12 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         }));
     }
     if (obj.rows.length > 1) {
-        menu.appendChild(structuralItem("Supprimer ligne", () => {
+        menu.appendChild(structuralItem("X= Supprimer ligne", () => {
             obj.rows.splice(rowIdx, 1);
         }));
     }
     if (colIdx < obj.rows[rowIdx].length - 1 && obj.rows[rowIdx][colIdx+1] !== null) { // S'assurer qu'il y a une cellule à droite et qu'elle n'est pas déjà partie d'une fusion
-        menu.appendChild(structuralItem("Fusionner à droite", () => {
+        menu.appendChild(structuralItem("|+| Fusionner à droite", () => {
             let cur = obj.rows[rowIdx][colIdx];
             let next = obj.rows[rowIdx][colIdx + 1];
             let currentText = (typeof cur === "object" && !cur.image) ? cur.text : (cur || "");
@@ -1495,7 +1500,7 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         }));
     }
     if (typeof cellData === "object" && cellData.colspan > 1) {
-        menu.appendChild(structuralItem("Scinder cellule", () => {
+        menu.appendChild(structuralItem("|-| Scinder cellule", () => {
             let n = cellData.colspan;
             let currentText = cellData.text || "";
             // Diviser le texte approximativement si possible (simpliste)
