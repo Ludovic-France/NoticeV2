@@ -1069,11 +1069,23 @@ function deleteSelected() {
 function formatDoc(cmd) { document.execCommand(cmd, false, null); }
 function setColor(color) { document.execCommand("foreColor", false, color); }
 function setFontSize(sz) {
-    document.execCommand("fontSize", false, 7);
-    let sel = window.getSelection();
-    if (!sel.rangeCount) return;
-    let el = sel.anchorNode.parentNode;
-    el.style.fontSize = sz;
+    // Utilise execCommand pour appliquer temporairement <font size="7">
+    document.execCommand('fontSize', false, 7);
+
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    // Récupère tous les <font size="7"> dans le conteneur commun
+    const fonts = range.commonAncestorContainer.querySelectorAll('font[size="7"]');
+
+    fonts.forEach(font => {
+        // S'assure que le nœud est bien dans la sélection (même partiellement)
+        if (selection.containsNode(font, true)) {
+            font.removeAttribute('size');
+            font.style.fontSize = sz;
+        }
+    });
 }
 
 /* ------- Drag & drop pour objets outils ------- */
