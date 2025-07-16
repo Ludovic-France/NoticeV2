@@ -1,0 +1,563 @@
+/* Police moderne */
+body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    margin: 0;
+    background: #f6f8fa;
+}
+#container {
+    display: flex;
+    height: 100vh;
+}
+aside#tools, aside#controls {
+    width: 220px;
+    background: #bbbbbb;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 0;
+}
+aside#tools {
+    border-right: 2px solid #eee;
+}
+aside#controls {
+    border-left: 2px solid #eee;
+    align-items: center;
+    gap: 12px;
+}
+aside h3 {
+    margin: 0 0 5px 20px;
+    font-size: 1em;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+.section {
+    margin-bottom: 12px;
+    padding: 0 5px;
+}
+.palette button {
+    border: none;
+    background: none;
+    font-size: 1em;
+    margin: 0 2px;
+    cursor: pointer;
+}
+.palette input[type=color] {
+    vertical-align: middle;
+    margin-right: 8px;
+}
+#draggable-objects .draggable {
+    background: #345b94;
+    color: #fff;
+    border-radius: 6px;
+    margin: 4px 0;
+    padding: 5px 8px;
+    cursor: grab;
+    text-align: center;
+    user-select: none;
+    box-shadow: 0 1px 4px rgba(40,40,50,0.1);
+    transition: background 0.2s;
+}
+#draggable-objects .draggable:active {
+    background: #24344f;
+}
+#icons-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+#icons-list img {
+    width: 28px;
+    height: 28px;
+    border-radius: 3px;
+    background: #fff;
+    border: 1px solid #bbb;
+    cursor: grab;
+}
+main#document {
+    flex: 1;
+    background: #eceff1;
+    overflow-y: auto;
+    position: relative;
+    padding: 24px 0;
+}
+
+
+#pages-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+.page {
+    background: #fff;
+    width: 210mm;
+    height: 297mm;
+    max-width: 210mm;
+    max-height: 297mm;
+    box-shadow: 0 2px 20px #0003;
+    border-radius: 10px;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    break-after: page;
+}
+.page.landscape {
+    width: 297mm;
+    height: 210mm;
+    max-width: 297mm;
+    max-height: 210mm;
+}
+.header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 2px solid #e0e0e0;
+    padding: 9px 32px 10px 32px;
+    height: 80px;
+    background: #f6f8fa;
+}
+.header .logo {
+    height: 60px;
+    width: 60px;
+    object-fit: contain;
+}
+.header .doc-title {
+    flex: 1;
+    margin: 0 18px;
+    font-size: 30pt;
+    font-weight: bold;
+    text-align: center;
+}
+.header .revision {
+    min-width: 60px;
+    text-align: right;
+    font-size: 16px;
+}
+.header .revision .index {
+    font-size: 1em;
+}
+.header .revision .num {
+    font-size: 1em;
+    color: #22d;
+	font-weight: bold;
+}
+.page .content {
+    flex: 1;
+    padding: 12px 40px 24px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espacement vertical entre les éléments du contenu */
+    overflow: hidden;
+}
+.page .pagination {
+    position: absolute;
+    right: 24px;
+    bottom: 16px;
+    color: #888;
+    font-size: 1em;
+    letter-spacing: 2px;
+}
+.page .img-drop {
+    border: 2px dashed #bbb;
+    min-height: 15cm;
+    max-height: 20cm;
+	width: 100%;
+    background: #fafbfc;
+    border-radius: 12px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page .img-drop img {
+    max-width: 90%;
+    max-height: 100%;
+}
+.selected {
+    box-shadow: 0 0 0 3px #4078d6 !important;
+    border-color: #4078d6 !important;
+}
+.page-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.page-table th {
+    background: #e3ebf3;
+    font-weight: bold;
+}
+.page-table td.selected, .page-table th.selected {
+    background: #d1e0fa;
+}
+.page-table td, .page-table th {
+	border: 1px solid #888;
+    padding: 4px 2px;
+    vertical-align: middle;
+    text-align: left;
+    min-width: 60px;
+	height: auto;
+    position: relative;
+    border: 1px solid #888;
+    word-break: break-word;
+}
+.page .chapter-title.h1 {
+    margin: 20px 0 10px 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #241b84;
+}
+.page .chapter-title.h2 {
+    margin: 20px 0 10px 0;
+	font-style: italic;
+    font-size: 18px;
+    font-weight: bold;
+    color: #342b94;
+}
+.page .chapter-title.h3 {
+    margin: 20px 0 10px 0;
+	font-style: italic;
+    font-size: 16px;
+    font-weight: bold;
+    color: #443ba4;
+}
+.page .chapter-title.h4 {
+    margin: 20px 0 10px 0;
+	font-style: italic;
+    font-size: 14px;
+    font-weight: bold;
+    color: #544bb4;
+}
+aside#controls button {
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: #5555ff;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 1.4em;
+    cursor: pointer;
+    box-shadow: 0 1px 5px #0002;
+    margin: 3px;
+    transition: background 0.2s;
+}
+aside#controls button:hover {
+    background: #24344f;
+}
+.page .selected {
+  box-shadow: 0 0 0 4px #2e6fd8, 0 2px 20px #0003;
+}
+.chapter-objects { 
+	min-height: 20px; /* Assure une zone droppable même vide */
+	border: 1px solid #eee;
+	border-radius: 5px;
+	position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espacement entre les objets */
+}
+
+/* NOUVELLE LOGIQUE DE CURSEUR POUR LE DÉPLACEMENT */
+.draggable-on-shift {
+    cursor: text; /* Par défaut, le curseur est pour le texte */
+}
+
+/* NOUVELLE LOGIQUE DE CURSEUR POUR LE DÉPLACEMENT */
+/* Le wrapper prend le curseur texte par défaut pour que l'intérieur soit éditable */
+.draggable-wrapper {
+    cursor: text;
+}
+/* Le wrapper change de curseur uniquement si Shift est maintenu */
+body.shift-key-down .draggable-wrapper {
+    cursor: grab;
+}
+body.shift-key-down .draggable-wrapper:active {
+    cursor: grabbing;
+}
+
+.draggable-wrapper.dragging {
+    opacity: 0.5;
+}
+
+/* Les éléments intérieurs ont un curseur texte permanent */
+.chapter-title, .rte-area, .table-container {
+    cursor: text;
+}
+
+body.shift-key-down .draggable-on-shift {
+    cursor: grab; /* Uniquement quand Shift est pressé */
+}
+body.shift-key-down .draggable-on-shift:active {
+    cursor: grabbing; /* Pendant le clic+drag */
+}
+
+.chapter-objects .dragging {
+    opacity: 0.5;
+}
+.table-container {
+    margin: 2px 0;
+}
+.col-resizer {
+    position: absolute;
+    top: 0;
+    right: -3px;
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 10;
+}
+#context-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    padding: 5px 0;
+    z-index: 1000;
+    font-size: 14px;
+}
+#context-menu div {
+    padding: 8px 15px;
+    cursor: pointer;
+}
+#context-menu div:hover {
+    background: #f0f0f0;
+}
+#context-menu hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 4px 0;
+}
+.page-table .shaded-header {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+::-webkit-scrollbar { width: 10px; background: #eaeaea;}
+::-webkit-scrollbar-thumb { background: #b0c1db; border-radius: 4px; }
+
+/* --- SYSTÈME DE GLISSER-DÉPOSER MODERNE --- */
+
+/* Indicateur de dépose (la ligne bleue) */
+#drop-indicator {
+    width: 100%;
+    height: 4px;
+    background-color: #007bff;
+    border-radius: 2px;
+    margin: -4px 0; /* Marge négative pour se coller entre les éléments */
+    display: none; /* Caché par défaut */
+    box-sizing: border-box;
+}
+
+.rte-area {
+    min-height: 20px;
+    padding: 4px;
+    background: #fafbff;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 4px;
+    outline: none;
+    overflow-y: auto;
+    max-height: 51vh;
+    /* CORRECTION: retrait du !important pour que le curseur "grab" puisse s'appliquer */
+    cursor: text; 
+}
+
+/* --- STYLES POUR L'IMPRESSION ET L'EXPORT HTML --- */
+
+/* Styles pour la table des matières en mode édition */
+#table-of-contents {
+	list-style-type: none;
+    padding-left: 0;
+	max-height: 946px;
+}
+
+#table-of-contents li {
+    margin-bottom: 5px;
+}
+
+#table-of-contents a {
+    display: flex;
+    justify-content: space-between;
+    text-decoration: none;
+    color: inherit;
+    padding: 0;
+}
+
+#table-of-contents a:hover {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+#table-of-contents .toc-title {
+    text-align: left;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+#table-of-contents .toc-page-num {
+    text-align: right;
+    min-width: 30px;
+    padding-left: 10px;
+    font-weight: normal;
+    color: #555;
+}
+
+@media print {
+    body {
+        background: #fff;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 12pt;
+        margin: 0;
+        padding: 0;
+    }
+
+    #tools, #controls, .drag-handle, #drop-indicator {
+        display: none !important;
+    }
+
+    #container {
+        display: block !important;
+        height: auto !important;
+        width: auto !important;
+    }
+
+    main#document {
+        flex: none !important;
+        width: 100% !important;
+        overflow-y: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #fff !important;
+    }
+
+    #pages-container {
+        display: block !important;
+        gap: 0 !important;
+        align-items: stretch !important;
+    }
+
+    .page {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 auto !important;
+        padding: 10mm 15mm 10mm 15mm !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        page-break-after: always !important;
+    }
+
+    .page:last-child {
+        page-break-after: avoid !important;
+    }
+
+    .page.landscape {
+        width: 297mm !important;
+        min-height: 210mm !important;
+        max-width: 297mm !important;
+        max-height: 210mm !important;
+    }
+
+    .header {
+        position: static !important;
+        background: #fff !important;
+        border-bottom: 1px solid #000 !important;
+        padding: 0 0 10px 0 !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .header .doc-title {
+        font-size: 24pt !important;
+    }
+
+    .header .logo, .header .doc-title, .header .revision {
+        color: #000 !important;
+    }
+
+    .page .content {
+        flex-grow: 1 !important;
+        padding: 10px 0 0 0 !important;
+        overflow: hidden !important;
+        max-height: none !important;
+        gap: 12px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+
+    .page .pagination {
+        display: block !important;
+        position: absolute !important;
+        bottom: 5mm !important;
+        right: 15mm !important;
+        left: 15mm !important;
+        text-align: center !important;
+        font-size: 10pt !important;
+        color: #000 !important;
+        width: auto !important;
+    }
+
+    .page .img-drop {
+        border: 1px solid #ccc !important;
+        min-height: auto !important;
+        background: #fff !important;
+    }
+
+    .page .img-drop img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .rte-area {
+        background: #fff !important;
+        border: none !important;
+        padding-left: 0 !important; /* Pas de padding pour la poignée à l'impression */
+    }
+
+    .page-table {
+        width: 100% !important;
+        table-layout: auto !important;
+    }
+
+    .page-table th, .page-table td {
+        border: 1px solid #000 !important;
+        word-break: break-word;
+    }
+
+    .page-table th {
+        background: #eee !important;
+        font-weight: bold;
+    }
+
+    .page .chapter-title {
+        color: #000 !important;
+        font-size: 18pt !important;
+    }
+
+    [contenteditable="true"] {
+        border: none !important;
+    }
+
+    .selected {
+        box-shadow: none !important;
+        border-color: transparent !important;
+    }
+
+    .col-resizer {
+        display: none !important;
+    }
+
+    #context-menu {
+        display: none !important;
+    }
+}

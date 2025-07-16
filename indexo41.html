@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Notice de machine</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chargement des données externes -->
+	<script src="constante.js"></script>
+	<script src="chapitre-data.js"></script>
+    <script src="icon-data.js"></script>
+    <script src="logo-data.js"></script>
+</head>
+<body>
+    <div id="container">
+        <!-- Bandeau gauche (outils) -->
+        <aside id="tools">
+            <div class="section">
+                <h3>Mise en forme</h3>
+                <button onclick="formatDoc('bold')" title="Gras"><b>G</b></button>
+                <button onclick="formatDoc('italic')" title="Italique"><i>I</i></button>
+                <button onclick="formatDoc('underline')" title="Souligné"><u>S</u></button>
+                <button onclick="formatDoc('superscript')" title="Exposant">x<sup>2</sup></button>
+                <button onclick="formatDoc('subscript')" title="Indice">x<sub>2</sub></button>
+                <button onclick="formatDoc('removeFormat')" title="Effacer le formatage">⨉</button>
+                <div class="palette">
+                    <!-- <input type="color" onchange="setColor(this.value)"> --
+>
+                    <!-- Couleurs classiques, palette customisée -->
+                    <button style="color:black" onclick="setColor('black')">A</button>
+                    <button style="color:white; background:#333" onclick="setColor('white')">A</button>
+                    <button style="color:red" onclick="setColor('red')">A</button>
+                    <button style="color:green" onclick="setColor('green')">A</button>
+                    <button style="color:blue" onclick="setColor('blue')">A</button>
+                    <button style="color:purple" onclick="setColor('purple')">A</button>
+                    <button style="color:brown" onclick="setColor('brown')">A</button>
+                    <button style="color:yellow; background:#333" onclick="setColor('yellow')">A</button>
+                </div>
+                <select onchange="setFontSize(this.value)">
+                    <option value="">Taille</option>
+                    <option value="8pt">8pt</option>
+                    <option value="9pt">9pt</option>
+                    <option value="10pt">10pt</option>
+                    <option value="11pt">11pt</option>
+                    <option value="12pt">12pt</option>
+                    <option value="14pt">14pt</option>
+                    <option value="16pt">16pt</option>
+                    <option value="18pt">18pt</option>
+                    <option value="20pt">20pt</option>
+                    <option value="24pt">24pt</option>
+                    <option value="26pt">26pt</option>
+                    <option value="28pt">28pt</option>
+                    <option value="30pt">30pt</option>
+                </select>
+            </div>
+            <div class="section">
+                <h3>Risques et Émissions</h3>
+                <div id="risk-checkboxes" style="margin-bottom: 10px;">
+                    <div><input type="checkbox" id="Laser" name="risk_laser" value="Laser"><label for="Laser" style="margin-left: 5px;">Laser</label></div>
+                    <div><input type="checkbox" id="Fumee" name="risk_fumee" value="Fumee"><label for="Fumee" style="margin-left: 5px;">Fumée</label></div>
+                    <div><input type="checkbox" id="Poussiere" name="risk_poussiere" value="Poussiere"><label for="Poussiere" style="margin-left: 5px;">Poussière</label></div>
+                    <div><input type="checkbox" id="IR" name="risk_ir" value="IR"><label for="IR" style="margin-left: 5px;">Rayonnement IR</label></div>
+                    <div><input type="checkbox" id="UV" name="risk_uv" value="UV"><label for="UV" style="margin-left: 5px;">Rayonnement UV</label></div>
+                </div>
+                <button onclick="appliquerRisquesSelectionnes()">Appliquer Risques/Émissions</button>
+            </div>
+            <div class="section">
+                <h3>Objets</h3>
+                <div id="draggable-objects">
+                    <div class="draggable" draggable="true" data-type="h1">Titre 1</div>
+                    <div class="draggable" draggable="true" data-type="h2">Titre 2</div>
+                    <div class="draggable" draggable="true" data-type="h3">Titre 3</div>
+                    <div class="draggable" draggable="true" data-type="h4">Titre 4</div>
+                    <div class="draggable" draggable="true" data-type="text">Zone de texte</div>
+                    <div class="draggable" draggable="true" data-type="table">Tableau</div>
+                </div>
+            </div>
+            <div class="section">
+                <h3>Pictogrammes</h3>
+                <div id="icons-list"></div>
+            </div>
+        </aside>
+
+        <!-- Zone centrale : document -->
+        <main id="document">
+            <div id="pages-container"></div>
+        </main>
+
+        <!-- Bandeau droit (contrôles) -->
+        <aside id="controls">
+            <!--<button onclick="refreshDocument()" title="Rafraîchir">🔄</button>-->
+			<button onclick="updateAllChapterNumbers()" title="Mettre à jour la numérotation">🔢</button>
+            <button onclick="toggleOrientation()" title="Changer l'orientation">⤾</button>
+            <button onclick="addPage()" title="Ajouter une page">➕</button>
+            <button onclick="deletePage()" title="Supprimer la page">❌</button>
+            <button onclick="deleteSelected()" title="Supprimer l'élément sélectionné">🗑</button>
+            <button onclick="saveJSON()" title="Sauvegarder le projet JSON">💾</button>
+            <input type="file" id="openJSON" accept=".json" style="display:none" onchange="openJSONFile(this)">
+            <button onclick="document.getElementById('openJSON').click()" title="Ouvrir un projet">📂</button>
+			<button onclick="exportCleanHTML()" title="Exporter HTML (pour Word)">📄</button> 
+        
+		<ul style="font-size:0.8rem; color:#666; margin-top:auto; list-style:none; padding-left:1em;">
+			<li>Raccourcis clavier</li>
+			<li>Ctl+Shift+V colle le contenu sans mise en forme</li>
+			<li style="color:blue;">Ctl+B pour <b>gras</b>, Ctl+U pour <u>souligner</u>, Ctl+I pour <i>italique</i></li>
+			<li >Ctl+P pour imprimer (pdf ou papier). En fonction de l'imprimante, réduire l'échelle.</li>
+		</ul>
+		</aside>
+
+    </div>
+        <!-- <script src="chapitre-data.js"></script> -->
+    <script src="app.js"></script>
+</body>
+</html>
