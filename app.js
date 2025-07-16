@@ -859,6 +859,7 @@ function renderPage(page, idx) {
                         if (i === 0 && j < nbCols - 1) {
                             let resizer = document.createElement('div');
                             resizer.className = "col-resizer";
+							resizer.contentEditable = "false";
                             Object.assign(resizer.style, {
                                 position: "absolute",
                                 top: "0",
