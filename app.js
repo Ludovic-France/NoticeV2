@@ -1068,30 +1068,53 @@ function deleteSelected() {
 /* ------- Fonctions de mise en forme RTE -------- */
 function formatDoc(cmd) { document.execCommand(cmd, false, null); }
 function setColor(color) { document.execCommand("foreColor", false, color); }
-function setFontSize(sz) {
-    // Utilise execCommand pour appliquer temporairement <font size="7">
-    document.execCommand('fontSize', false, 7);
 
+function setFontSize(sz) {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
-
     const range = selection.getRangeAt(0);
-    // S'assure que querySelectorAll est appelé sur un élément
-    let container = range.commonAncestorContainer;
-    if (container.nodeType !== Node.ELEMENT_NODE) {
-        container = container.parentElement;
-    }
-    // Récupère tous les <font size="7"> dans le conteneur commun
-    const fonts = container.querySelectorAll('font[size="7"]');
+    if (selection.isCollapsed) return;
 
-    fonts.forEach(font => {
-        // S'assure que le nœud est bien dans la sélection (même partiellement)
-        if (selection.containsNode(font, true)) {
-            font.removeAttribute('size');
-            font.style.fontSize = sz;
+    // On extrait le contenu sélectionné
+    const fragment = range.extractContents();
+
+    // Fonction qui retire tous les styles font-size, puis applique le nouveau
+    function clearAndApplyFontSize(node) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+            // Toujours entourer d'un span
+            const span = document.createElement('span');
+            span.style.fontSize = sz;
+            span.textContent = node.textContent;
+            return span;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            let clone = node.cloneNode(false);
+            // Si c'est un span, on enlève son style font-size
+            if (clone.tagName === 'SPAN') {
+                clone.style.fontSize = '';
+            }
+            // Applique récursivement
+            Array.from(node.childNodes).forEach(child => {
+                clone.appendChild(clearAndApplyFontSize(child));
+            });
+            return clone;
         }
+        return node;
+    }
+
+    const newFragment = document.createDocumentFragment();
+    Array.from(fragment.childNodes).forEach(node => {
+        newFragment.appendChild(clearAndApplyFontSize(node));
     });
+
+    // Remplace l'ancien contenu par le nouveau
+    range.insertNode(newFragment);
+
+    // Replace le curseur après la sélection (simple reset, améliorable)
+    selection.removeAllRanges();
 }
+
+
+
 
 /* ------- Drag & drop pour objets outils ------- */
 function setupDragNDrop() {
