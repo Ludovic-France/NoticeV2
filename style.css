@@ -293,6 +293,7 @@ body.shift-key-down .draggable-on-shift {
 }
 body.shift-key-down .draggable-on-shift:active {
     cursor: grabbing; /* Pendant le clic+drag */
+    user-select: none; /* Évite la sélection de texte pendant le déplacement */
 }
 
 .chapter-objects .dragging {
