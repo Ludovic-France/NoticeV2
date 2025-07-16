@@ -1179,6 +1179,10 @@ function toggleOrientation(idx = null) {
 
 /* ------- Sauvegarder / Charger JSON ------- */
 function saveJSON() {
+    // Force all editable areas to commit their content by triggering blur
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.dispatchEvent(new Event('blur'));
+    });
     const data = JSON.stringify({ pages, orientation });
     let a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], {type: "application/json"}));
