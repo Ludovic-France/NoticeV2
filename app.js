@@ -327,7 +327,8 @@ function handleDropInChapter(event, pageIdx) {
 function renderPage(page, idx) {
     let div = document.createElement('div');
     div.className = "page";
-    if (orientation[idx] === "landscape") div.classList.add("landscape");
+    if (orientation[idx] === "landscape")
+        div.classList.add("landscape");
 
     let header = document.createElement('div');
     header.className = "header";
@@ -341,7 +342,7 @@ function renderPage(page, idx) {
         docTitle.contentEditable = "true";
         docTitle.spellcheck = false;
         docTitle.innerText = page.docTitle || "Titre du document";
-        docTitle.addEventListener('blur', function() {
+        docTitle.addEventListener('blur', function () {
             pages[0].docTitle = docTitle.innerText;
         });
     } else {
@@ -356,7 +357,7 @@ function renderPage(page, idx) {
     `;
     if (idx === 0) {
         let numDiv = revBox.querySelector('.num');
-        numDiv.addEventListener('blur', function() {
+        numDiv.addEventListener('blur', function () {
             pages[0].editableNum = numDiv.innerText;
         });
     }
@@ -372,11 +373,15 @@ function renderPage(page, idx) {
         title.style.fontSize = "30pt";
         title.className = "doc-title";
         title.innerText = page.title || "Notice : Untel";
-        title.addEventListener('blur', function() {
+        title.addEventListener('blur', function () {
             page.title = title.innerText;
         });
-        title.onclick = function(e) {
-            selectedElement = { pageIdx: idx, objIdx: "mainTitle", type: "mainTitle" };
+        title.onclick = function (e) {
+            selectedElement = {
+                pageIdx: idx,
+                objIdx: "mainTitle",
+                type: "mainTitle"
+            };
             document.querySelectorAll('.selected').forEach(n => n.classList.remove('selected'));
             title.classList.add('selected');
             e.stopPropagation();
@@ -388,11 +393,16 @@ function renderPage(page, idx) {
         let imgDrop = document.createElement('div');
         imgDrop.className = "img-drop";
         imgDrop.innerHTML = page.img ? `<img src="${page.img}" alt="image">` : '<span>Glissez une image ici</span>';
-        imgDrop.ondragover = e => { e.preventDefault(); imgDrop.style.background ="#eef"; };
-        imgDrop.ondragleave = e => { imgDrop.style.background=""; };
+        imgDrop.ondragover = e => {
+            e.preventDefault();
+            imgDrop.style.background = "#eef";
+        };
+        imgDrop.ondragleave = e => {
+            imgDrop.style.background = "";
+        };
         imgDrop.ondrop = e => {
             e.preventDefault();
-            imgDrop.style.background="";
+            imgDrop.style.background = "";
             const file = e.dataTransfer.files[0];
             if (file && file.type.startsWith('image')) {
                 let reader = new FileReader();
@@ -414,7 +424,7 @@ function renderPage(page, idx) {
                         imgDrop.innerHTML = '';
                         const img = document.createElement('img');
                         img.src = reader.result;
-                        img.style.maxWidth  = '100%';
+                        img.style.maxWidth = '100%';
                         img.style.maxHeight = '100%';
                         imgDrop.appendChild(img);
                         page.img = reader.result;
@@ -426,51 +436,52 @@ function renderPage(page, idx) {
             const url = e.clipboardData.getData('text/uri-list') || e.clipboardData.getData('text/plain');
             if (url && /^https?:\/\//.test(url)) {
                 fetch(url)
-                    .then(r => r.blob())
-                    .then(blob => {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            imgDrop.innerHTML = '';
-                            const img = document.createElement('img');
-                            img.src = reader.result;
-                            img.style.maxWidth  = '100%';
-                            img.style.maxHeight = '100%';
-                            imgDrop.appendChild(img);
-                            page.img = reader.result;
-                        };
-                        reader.readAsDataURL(blob);
-                    })
-                    .catch(console.error);
+                .then(r => r.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        imgDrop.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = reader.result;
+                        img.style.maxWidth = '100%';
+                        img.style.maxHeight = '100%';
+                        imgDrop.appendChild(img);
+                        page.img = reader.result;
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(console.error);
             }
         });
         content.appendChild(imgDrop);
-                let constructeurBlock = document.createElement('div');
-                constructeurBlock.className = "constructeur-info";
-                constructeurBlock.style.border = "2px solid #000";
-                constructeurBlock.style.padding = "10px";
-                constructeurBlock.style.marginTop = "20px";
-                constructeurBlock.style.fontSize = "12pt";
-                constructeurBlock.style.textAlign = "left";
-                constructeurBlock.innerHTML = "<b>Constructeur : APA <br>Adresse :</b> 292 Rue de l'Epinette, 76320 CAUDEBEC Lès ELBEUF <br>☎️ +33 2.32.96.26.60";
-                content.appendChild(constructeurBlock);
+        let constructeurBlock = document.createElement('div');
+        constructeurBlock.className = "constructeur-info";
+        constructeurBlock.style.border = "2px solid #000";
+        constructeurBlock.style.padding = "10px";
+        constructeurBlock.style.marginTop = "20px";
+        constructeurBlock.style.fontSize = "12pt";
+        constructeurBlock.style.textAlign = "left";
+        constructeurBlock.innerHTML = "<b>Constructeur : APA <br>Adresse :</b> 292 Rue de l'Epinette, 76320 CAUDEBEC Lès ELBEUF <br>☎️ +33 2.32.96.26.60";
+        content.appendChild(constructeurBlock);
     } else if (page.type === 'toc') { // TOC Principale (idx === 1 habituellement)
         let tocMainTitle = document.createElement('h2');
         tocMainTitle.innerText = "Sommaire";
-                tocMainTitle.style.padding = '0';
-                tocMainTitle.style.margin = '0';
+        tocMainTitle.style.padding = '0';
+        tocMainTitle.style.margin = '0';
         content.appendChild(tocMainTitle);
 
         let tocOl = document.createElement("ol");
         tocOl.id = "table-of-contents";
         tocOl.style.fontSize = "1em";
-        tocOl.style.margin   = "0 0 0 24px";
-        tocOl.style.padding  = "0";
+        tocOl.style.margin = "0 0 0 24px";
+        tocOl.style.padding = "0";
 
         // Générer toutes les entrées du sommaire basées sur les titres des pages de chapitre
         let itemsAddedToTOC = 0;
         for (let i = 2; i < pages.length; i++) { // Commencer à vérifier à partir de la page d'index 2
             const p = pages[i];
-            if (p.type === 'toc_continued') continue;
+            if (p.type === 'toc_continued')
+                continue;
 
             if (Array.isArray(p.objects)) {
                 p.objects.forEach(obj => {
@@ -503,8 +514,8 @@ function renderPage(page, idx) {
         let tocOl = document.createElement("ol");
         tocOl.id = "table-of-contents";
         tocOl.style.fontSize = "1.1em";
-        tocOl.style.margin   = "0 0 0 24px";
-        tocOl.style.padding  = "0";
+        tocOl.style.margin = "0 0 0 24px";
+        tocOl.style.padding = "0";
 
         if (Array.isArray(page.tocItemsToRender)) {
             page.tocItemsToRender.forEach(liNode => {
@@ -512,9 +523,9 @@ function renderPage(page, idx) {
             });
         }
         content.appendChild(tocOl);
-    }
-    else { // Pages de chapitre (type 'chapter' ou 'custom')
-        if (!Array.isArray(page.objects)) page.objects = [];
+    } else { // Pages de chapitre (type 'chapter' ou 'custom')
+        if (!Array.isArray(page.objects))
+            page.objects = [];
         let objs = document.createElement('div');
         objs.className = "chapter-objects";
 
@@ -544,318 +555,332 @@ function renderPage(page, idx) {
                     paginatePage(idx);
                 });
             } else if (obj.type === "text") {
-                                el = document.createElement('div');
-                                el.contentEditable = "true";
-                                el.className = "rte-area";
-                                el.innerHTML = obj.html || "";
+                el = document.createElement('div');
+                el.contentEditable = "true";
+                el.className = "rte-area";
+                el.innerHTML = obj.html || "";
 
-                                const insertImageIntoRTE = (targetDiv, imageSrc) => {
-                                        const img = document.createElement('img');
-                                        img.src = imageSrc;
-                                        img.style.maxWidth = '100%';
-                                        img.style.maxHeight = '300px';
-                                        img.style.display = 'block';
-                                        img.style.margin = '10px 0';
-                                        img.style.objectFit = "contain";
+                const insertImageIntoRTE = (targetDiv, imageSrc) => {
+                    const img = document.createElement('img');
+					img.draggable = false; // 16 07 2025 14:09 Test pour ne pas rendre les images draggable, à voir si à conserver
+                    img.src = imageSrc;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '300px';
+                    img.style.display = 'block';
+                    img.style.margin = '10px 0';
+                    img.style.objectFit = "contain";
 
-                                        const selection = window.getSelection();
-                                        if (selection.rangeCount > 0 && selection.anchorNode && targetDiv.contains(selection.anchorNode)) {
-                                                const range = selection.getRangeAt(0);
-                                                range.deleteContents();
-                                                range.insertNode(img);
-                                                const newRange = document.createRange();
-                                                newRange.setStartAfter(img);
-                                                newRange.collapse(true);
-                                                selection.removeAllRanges();
-                                                selection.addRange(newRange);
-                                        } else {
-                                                targetDiv.appendChild(img);
-                                        }
-                                        paginatePage(idx);
-                                };
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0 && selection.anchorNode && targetDiv.contains(selection.anchorNode)) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(img);
+                        const newRange = document.createRange();
+                        newRange.setStartAfter(img);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                    } else {
+                        targetDiv.appendChild(img);
+                    }
+                    paginatePage(idx);
+                };
 
-                                el.addEventListener('paste', e => {
-                                        const items = (e.clipboardData || window.clipboardData).items;
-                                        for (let item of items) {
-                                                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                                                        e.preventDefault();
-                                                        const file = item.getAsFile();
-                                                        const reader = new FileReader();
-                                                        reader.onload = () => {
-                                                                insertImageIntoRTE(el, reader.result);
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                        return;
-                                                }
-                                        }
-                                });
-
-                                el.addEventListener('dragover', e => {
-                                        e.preventDefault();
-                                        el.style.outline = "2px dashed #4078d6";
-                                });
-
-                                el.addEventListener('dragleave', () => {
-                                        el.style.outline = "none";
-                                });
-
-                                el.addEventListener('drop', e => {
-                                        e.preventDefault();
-                                        el.style.outline = "none";
-
-                                        const dataType = e.dataTransfer.getData("type");
-
-                                        if (dataType === "icon") {
-                                                const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
-                                                if (typeof IconData !== "undefined" && IconData[iconIndex]) {
-                                                        insertImageIntoRTE(el, IconData[iconIndex].url);
-                                                }
-                                        } else if (e.dataTransfer.files.length > 0) {
-                                                const file = e.dataTransfer.files[0];
-                                                if (file.type.startsWith("image/")) {
-                                                        const reader = new FileReader();
-                                                        reader.onload = () => {
-                                                                insertImageIntoRTE(el, reader.result);
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                }
-                                        } else {
-                                                const text = e.dataTransfer.getData('text/plain');
-                                                if (text) {
-                                                        document.execCommand('insertText', false, text);
-                                                }
-                                        }
-                                });
-
-                                el.addEventListener('blur', function() {
-                                        obj.html = el.innerHTML;
-                                        paginatePage(idx);
-                                });
-            } else if (obj.type === "table") {
-                                if (obj.headerShaded === undefined) obj.headerShaded = false;
-                                el = document.createElement('div');
-                                el.className = "table-container";
-                                let containerWidth = orientation[idx] === "portrait" ? 710 : 1038;
-                                let table = document.createElement('table');
-                                table.className = "page-table";
-                                table.classList.add('draggable-on-shift');
-                                table.setAttribute('draggable', 'true');
-
-                                table.addEventListener('mousedown', function(e) {
-                                        if (e.shiftKey) {
-                                                e.preventDefault();
-                                        }
-                                });
-
-                                table.addEventListener('dragstart', function(e) {
-                                        if (!e.shiftKey) {
-                                                e.preventDefault();
-                                                return;
-                                        }
-                                        e.dataTransfer.effectAllowed = "move";
-                                        e.dataTransfer.setData('move-obj-oid', oid + "");
-                                        e.dataTransfer.setData('move-obj-page', idx + "");
-                                        el.classList.add('dragging');
-                                });
-
-                                table.addEventListener('dragend', function() {
-                                        el.classList.remove('dragging');
-                                });
-
-                                table.style.width = containerWidth + "px";
-                                table.style.maxWidth = containerWidth + "px";
-                                table.style.tableLayout = "fixed";
-                                let firstRow = obj.rows.find(r => r && r.length);
-                                let nbCols = firstRow ? firstRow.length : 2;
-                                if (!obj.colWidths || obj.colWidths.length !== nbCols) {
-                                        let defaultPx = containerWidth / nbCols;
-                                        obj.colWidths = Array(nbCols).fill(defaultPx);
-                                } else {
-                                        let total = obj.colWidths.reduce((a, b) => a + parseFloat(b || 0), 0);
-                                        if (total === 0 && nbCols > 0) {
-                                                let defaultPx = containerWidth / nbCols;
-                                                obj.colWidths = Array(nbCols).fill(defaultPx);
-                                                total = containerWidth;
-                                        }
-                                        if (total > 0) {
-                                                let scale = containerWidth / total;
-                                                obj.colWidths = obj.colWidths.map(w => parseFloat(w || 0) * scale);
-                                        }
-                                }
-                                let colgroup = document.createElement('colgroup');
-                                let accumulated = 0;
-                                for (let c = 0; c < nbCols; c++) {
-                                        let col = document.createElement('col');
-                                        let width = Math.round(obj.colWidths[c]);
-                                        if (c === nbCols - 1) width = containerWidth - accumulated;
-                                        else accumulated += width;
-                                        obj.colWidths[c] = width;
-                                        col.style.width = width + "px";
-                                        colgroup.appendChild(col);
-                                }
-                                table.appendChild(colgroup);
-                                let tbody = document.createElement('tbody');
-
-                                const insertImageIntoCell = (targetCell, imageSrc) => {
-                                        const img = document.createElement('img');
-                                        img.src = imageSrc;
-                                        img.style.maxWidth = "100%";
-                                        img.style.maxHeight = "800px";
-                                        img.style.objectFit = "contain";
-                                        img.style.verticalAlign = "middle";
-
-                                        const selection = window.getSelection();
-                                        if (selection.rangeCount > 0 && selection.anchorNode && targetCell.contains(selection.anchorNode)) {
-                                                const range = selection.getRangeAt(0);
-                                                range.deleteContents();
-                                                range.insertNode(img);
-                                                range.setStartAfter(img);
-                                                range.collapse(true);
-                                                selection.removeAllRanges();
-                                                selection.addRange(range);
-                                        } else {
-                                                targetCell.appendChild(img);
-                                        }
-                                        paginatePage(idx);
-                                };
-
-                                obj.rows.forEach((row, i) => {
-                                        let tr = document.createElement('tr');
-                                        if (i === 0 && obj.headerShaded) {
-                                                tr.style.backgroundColor = "#f5f5f5";
-                                                tr.style.fontWeight = "bold";
-                                        }
-                                        for (let j = 0; j < (row ? row.length : 0); j++) {
-                                                let cellData = row[j];
-                                                if (cellData === null) continue;
-                                                let td = document.createElement('td');
-                                                td.contentEditable = "true";
-                                                td.style.verticalAlign = "middle";
-                                                td.style.overflow = "hidden";
-                                                td.style.position = "relative";
-                                                td.addEventListener('focus', () => {
-                                                        const range = document.createRange();
-                                                        range.selectNodeContents(td);
-                                                        range.collapse(true);
-                                                        const sel = window.getSelection();
-                                                        sel.removeAllRanges();
-                                                        sel.addRange(range);
-                                                });
-
-                                                if (typeof cellData === "object" && cellData.image) {
-                                                         td.innerHTML = `<img src="${cellData.image}" style="max-width:100%;  object-fit:contain; vertical-align:middle;">`;
-                                                } else {
-                                                         td.innerHTML = (typeof cellData === "object" ? cellData.text : cellData) || "";
-                                                }
-
-                                                let colspan = (typeof cellData === "object" && cellData.colspan) ? cellData.colspan : 1;
-                                                let align = (typeof cellData === "object" && cellData.align) ? cellData.align : "left";
-                                                td.colSpan = colspan;
-                                                td.style.textAlign = align;
-
-                                                td.addEventListener('blur', () => {
-                                                        if (typeof cellData === "object" && cellData !== null) {
-                                                                cellData.text = td.innerHTML;
-                                                                delete cellData.image;
-                                                        } else {
-                                                                obj.rows[i][j] = td.innerHTML;
-                                                        }
-                                                        paginatePage(idx);
-                                                });
-
-                                                td.addEventListener('paste', e => {
-                                                        const items = (e.clipboardData || window.clipboardData).items;
-                                                        for (let item of items) {
-                                                                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                                                                        e.preventDefault();
-                                                                        const file = item.getAsFile();
-                                                                        const reader = new FileReader();
-                                                                        reader.onload = () => {
-                                                                                insertImageIntoCell(td, reader.result);
-                                                                        };
-                                                                        reader.readAsDataURL(file);
-                                                                        return;
-                                                                }
-                                                        }
-                                                });
-
-                                                td.addEventListener('dragover', e => e.preventDefault());
-                                                td.addEventListener('drop', e => {
-                                                        e.preventDefault();
-                                                        const dataType = e.dataTransfer.getData("type");
-
-                                                        if (dataType === "icon") {
-                                                                const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
-                                                                if (typeof IconData !== "undefined" && IconData[iconIndex]) {
-                                                                        insertImageIntoCell(td, IconData[iconIndex].url);
-                                                                }
-                                                        } else if (e.dataTransfer.files.length > 0) {
-                                                                const file = e.dataTransfer.files[0];
-                                                                if (file.type.startsWith("image/")) {
-                                                                        const reader = new FileReader();
-                                                                        reader.onload = () => {
-                                                                                insertImageIntoCell(td, reader.result);
-                                                                        };
-                                                                        reader.readAsDataURL(file);
-                                                                }
-                                                        } else {
-                                                                const text = e.dataTransfer.getData('text/plain');
-                                                                if (text) {
-                                                                        document.execCommand('insertText', false, text);
-                                                                }
-                                                        }
-                                                });
-
-                                                td.addEventListener('contextmenu', e => {
-                                                        e.preventDefault();
-                                                        showTableMenu(e, obj, i, j);
-                                                        setTimeout(() => td.focus(), 0);
-                                                });
-                                                if (i === 0 && j < nbCols - 1) {
-                                                        let resizer = document.createElement('div');
-                                                        resizer.className = "col-resizer";
-                                                        Object.assign(resizer.style, {
-                                                                position: "absolute", top: "0", right: "-3px", width: "6px",
-                                                                height: "100%", cursor: "col-resize", zIndex: "10"
-                                                        });
-                                                        td.appendChild(resizer);
-                                                        resizer.addEventListener('mousedown', e => {
-                                                                e.preventDefault();
-                                                                const startX = e.pageX;
-                                                                const leftC = colgroup.children[j];
-                                                                const rightC = colgroup.children[j + 1];
-                                                                const wL = parseFloat(obj.colWidths[j]);
-                                                                const wR = parseFloat(obj.colWidths[j + 1]);
-                                                                document.body.style.cursor = "col-resize";
-                                                                function onMove(ev) {
-                                                                        let d = ev.pageX - startX;
-                                                                        let nl = wL + d, nr = wR - d;
-                                                                        if (nl < 30 || nr < 30) return;
-                                                                        obj.colWidths[j] = nl;
-                                                                        obj.colWidths[j + 1] = nr;
-                                                                        leftC.style.width = nl + "px";
-                                                                        rightC.style.width = nr + "px";
-                                                                }
-                                                                function onUp() {
-                                                                        document.removeEventListener('mousemove', onMove);
-                                                                        document.removeEventListener('mouseup', onUp);
-                                                                        document.body.style.cursor = "";
-                                                                }
-                                                                document.addEventListener('mousemove', onMove);
-                                                                document.addEventListener('mouseup', onUp);
-                                                        });
-                                                }
-                                                tr.appendChild(td);
-                                                if (colspan > 1) {
-                                                        for (let k = 1; k < colspan; k++) obj.rows[i][j + k] = null;
-                                                        j += colspan - 1;
-                                                }
-                                        }
-                                        tbody.appendChild(tr);
-                                });
-                                table.appendChild(tbody);
-                                el.appendChild(table);
+                el.addEventListener('paste', e => {
+                    const items = (e.clipboardData || window.clipboardData).items;
+                    for (let item of items) {
+                        if (item.kind === 'file' && item.type.startsWith('image/')) {
+                            e.preventDefault();
+                            const file = item.getAsFile();
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                insertImageIntoRTE(el, reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                            return;
                         }
+                    }
+                });
+
+                el.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    el.style.outline = "2px dashed #4078d6";
+                });
+
+                el.addEventListener('dragleave', () => {
+                    el.style.outline = "none";
+                });
+
+                el.addEventListener('drop', e => {
+                    e.preventDefault();
+                    el.style.outline = "none";
+
+                    const dataType = e.dataTransfer.getData("type");
+
+                    if (dataType === "icon") {
+                        const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
+                        if (typeof IconData !== "undefined" && IconData[iconIndex]) {
+                            insertImageIntoRTE(el, IconData[iconIndex].url);
+                        }
+                    } else if (e.dataTransfer.files.length > 0) {
+                        const file = e.dataTransfer.files[0];
+                        if (file.type.startsWith("image/")) {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                insertImageIntoRTE(el, reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    } else {
+                        const text = e.dataTransfer.getData('text/plain');
+                        if (text) {
+                            document.execCommand('insertText', false, text);
+                        }
+                    }
+                });
+
+                el.addEventListener('blur', function () {
+                    obj.html = el.innerHTML;
+                    paginatePage(idx);
+                });
+            } else if (obj.type === "table") {
+                if (obj.headerShaded === undefined)
+                    obj.headerShaded = false;
+                el = document.createElement('div');
+                el.className = "table-container";
+                let containerWidth = orientation[idx] === "portrait" ? 710 : 1038;
+                let table = document.createElement('table');
+                table.className = "page-table";
+                table.classList.add('draggable-on-shift');
+                table.setAttribute('draggable', 'true');
+
+                table.addEventListener('mousedown', function (e) {
+                    if (e.shiftKey) {
+                        e.preventDefault();
+                    }
+                }, true);
+
+				table.addEventListener('dragstart', function(e) {
+					if (!e.shiftKey) {
+							e.preventDefault();
+							return;
+					}
+					e.dataTransfer.effectAllowed = "move";
+					e.dataTransfer.setData('move-obj-oid', oid + "");
+					e.dataTransfer.setData('move-obj-page', idx + "");
+					e.stopPropagation();
+					el.classList.add('dragging');
+				});
+
+                table.addEventListener('dragend', function () {
+                    el.classList.remove('dragging');
+                });
+
+                table.style.width = containerWidth + "px";
+                table.style.maxWidth = containerWidth + "px";
+                table.style.tableLayout = "fixed";
+                let firstRow = obj.rows.find(r => r && r.length);
+                let nbCols = firstRow ? firstRow.length : 2;
+                if (!obj.colWidths || obj.colWidths.length !== nbCols) {
+                    let defaultPx = containerWidth / nbCols;
+                    obj.colWidths = Array(nbCols).fill(defaultPx);
+                } else {
+                    let total = obj.colWidths.reduce((a, b) => a + parseFloat(b || 0), 0);
+                    if (total === 0 && nbCols > 0) {
+                        let defaultPx = containerWidth / nbCols;
+                        obj.colWidths = Array(nbCols).fill(defaultPx);
+                        total = containerWidth;
+                    }
+                    if (total > 0) {
+                        let scale = containerWidth / total;
+                        obj.colWidths = obj.colWidths.map(w => parseFloat(w || 0) * scale);
+                    }
+                }
+                let colgroup = document.createElement('colgroup');
+                let accumulated = 0;
+                for (let c = 0; c < nbCols; c++) {
+                    let col = document.createElement('col');
+                    let width = Math.round(obj.colWidths[c]);
+                    if (c === nbCols - 1)
+                        width = containerWidth - accumulated;
+                    else
+                        accumulated += width;
+                    obj.colWidths[c] = width;
+                    col.style.width = width + "px";
+                    colgroup.appendChild(col);
+                }
+                table.appendChild(colgroup);
+                let tbody = document.createElement('tbody');
+
+                const insertImageIntoCell = (targetCell, imageSrc) => {
+                    const img = document.createElement('img');
+                    img.src = imageSrc;
+                    img.style.maxWidth = "100%";
+                    img.style.maxHeight = "800px";
+                    img.style.objectFit = "contain";
+                    img.style.verticalAlign = "middle";
+
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0 && selection.anchorNode && targetCell.contains(selection.anchorNode)) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(img);
+                        range.setStartAfter(img);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } else {
+                        targetCell.appendChild(img);
+                    }
+                    paginatePage(idx);
+                };
+
+                obj.rows.forEach((row, i) => {
+                    let tr = document.createElement('tr');
+                    if (i === 0 && obj.headerShaded) {
+                        tr.style.backgroundColor = "#f5f5f5";
+                        tr.style.fontWeight = "bold";
+                    }
+                    for (let j = 0; j < (row ? row.length : 0); j++) {
+                        let cellData = row[j];
+                        if (cellData === null)
+                            continue;
+                        let td = document.createElement('td');
+                        td.contentEditable = "true";
+                        td.style.verticalAlign = "middle";
+                        td.style.overflow = "hidden";
+                        td.style.position = "relative";
+                        td.addEventListener('focus', () => {
+                            const range = document.createRange();
+                            range.selectNodeContents(td);
+                            range.collapse(true);
+                            const sel = window.getSelection();
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        });
+
+                        if (typeof cellData === "object" && cellData.image) {
+                            td.innerHTML = `<img src="${cellData.image}" style="max-width:100%;  object-fit:contain; vertical-align:middle;">`;
+                        } else {
+                            td.innerHTML = (typeof cellData === "object" ? cellData.text : cellData) || "";
+                        }
+
+                        let colspan = (typeof cellData === "object" && cellData.colspan) ? cellData.colspan : 1;
+                        let align = (typeof cellData === "object" && cellData.align) ? cellData.align : "left";
+                        td.colSpan = colspan;
+                        td.style.textAlign = align;
+
+                        td.addEventListener('blur', () => {
+                            if (typeof cellData === "object" && cellData !== null) {
+                                cellData.text = td.innerHTML;
+                                delete cellData.image;
+                            } else {
+                                obj.rows[i][j] = td.innerHTML;
+                            }
+                            paginatePage(idx);
+                        });
+
+                        td.addEventListener('paste', e => {
+                            const items = (e.clipboardData || window.clipboardData).items;
+                            for (let item of items) {
+                                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                                    e.preventDefault();
+                                    const file = item.getAsFile();
+                                    const reader = new FileReader();
+                                    reader.onload = () => {
+                                        insertImageIntoCell(td, reader.result);
+                                    };
+                                    reader.readAsDataURL(file);
+                                    return;
+                                }
+                            }
+                        });
+
+                        td.addEventListener('dragover', e => e.preventDefault());
+                        td.addEventListener('drop', e => {
+                            e.preventDefault();
+                            const dataType = e.dataTransfer.getData("type");
+
+                            if (dataType === "icon") {
+                                const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
+                                if (typeof IconData !== "undefined" && IconData[iconIndex]) {
+                                    insertImageIntoCell(td, IconData[iconIndex].url);
+                                }
+                            } else if (e.dataTransfer.files.length > 0) {
+                                const file = e.dataTransfer.files[0];
+                                if (file.type.startsWith("image/")) {
+                                    const reader = new FileReader();
+                                    reader.onload = () => {
+                                        insertImageIntoCell(td, reader.result);
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            } else {
+                                const text = e.dataTransfer.getData('text/plain');
+                                if (text) {
+                                    document.execCommand('insertText', false, text);
+                                }
+                            }
+                        });
+
+                        td.addEventListener('contextmenu', e => {
+                            e.preventDefault();
+                            showTableMenu(e, obj, i, j);
+                            setTimeout(() => td.focus(), 0);
+                        });
+                        if (i === 0 && j < nbCols - 1) {
+                            let resizer = document.createElement('div');
+                            resizer.className = "col-resizer";
+                            Object.assign(resizer.style, {
+                                position: "absolute",
+                                top: "0",
+                                right: "-3px",
+                                width: "6px",
+                                height: "100%",
+                                cursor: "col-resize",
+                                zIndex: "10"
+                            });
+                            td.appendChild(resizer);
+                            resizer.addEventListener('mousedown', e => {
+                                e.preventDefault();
+                                const startX = e.pageX;
+                                const leftC = colgroup.children[j];
+                                const rightC = colgroup.children[j + 1];
+                                const wL = parseFloat(obj.colWidths[j]);
+                                const wR = parseFloat(obj.colWidths[j + 1]);
+                                document.body.style.cursor = "col-resize";
+                                function onMove(ev) {
+                                    let d = ev.pageX - startX;
+                                    let nl = wL + d,
+                                    nr = wR - d;
+                                    if (nl < 30 || nr < 30)
+                                        return;
+                                    obj.colWidths[j] = nl;
+                                    obj.colWidths[j + 1] = nr;
+                                    leftC.style.width = nl + "px";
+                                    rightC.style.width = nr + "px";
+                                }
+                                function onUp() {
+                                    document.removeEventListener('mousemove', onMove);
+                                    document.removeEventListener('mouseup', onUp);
+                                    document.body.style.cursor = "";
+                                }
+                                document.addEventListener('mousemove', onMove);
+                                document.addEventListener('mouseup', onUp);
+                            });
+                        }
+                        tr.appendChild(td);
+                        if (colspan > 1) {
+                            for (let k = 1; k < colspan; k++)
+                                obj.rows[i][j + k] = null;
+                            j += colspan - 1;
+                        }
+                    }
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                el.appendChild(table);
+            }
 
             if (el) {
                 // CORRECTION: Logique de Drag & Drop simplifiée et corrigée
@@ -865,13 +890,15 @@ function renderPage(page, idx) {
                 // NOUVEAU: Prévenir le comportement par défaut (sélection de texte)
                 // lors d'un Shift+clic pour garantir que le dragstart se déclenche.
                 // C'est la correction clé pour les tableaux et zones de texte.
-                el.addEventListener('mousedown', function(e) {
+                el.addEventListener('mousedown', function (e) {
                     if (e.shiftKey) {
                         e.stopPropagation();
                     }
-                });
+                }, true);
 
                 el.addEventListener('dragstart', function(e) {
+                    // Ignore drags that originate from the table itself
+                    if (e.target.tagName === 'TABLE') return;
                     // On ne démarre le glisser-déposer que si la touche Shift est maintenue
                     if (!e.shiftKey) {
                         e.preventDefault();
@@ -883,13 +910,18 @@ function renderPage(page, idx) {
                     el.classList.add('dragging');
                 });
 
-                el.addEventListener('dragend', function() {
+                el.addEventListener('dragend', function () {
                     el.classList.remove('dragging');
                 });
 
-                el.onclick = function(e) {
-                    if (e.shiftKey) return; // Empêche la sélection si on a essayé de drag
-                    selectedElement = { pageIdx: idx, objIdx: oid, type: obj.type };
+                el.onclick = function (e) {
+                    if (e.shiftKey)
+                        return; // Empêche la sélection si on a essayé de drag
+                    selectedElement = {
+                        pageIdx: idx,
+                        objIdx: oid,
+                        type: obj.type
+                    };
                     document.querySelectorAll('.selected').forEach(n => n.classList.remove('selected'));
                     el.classList.add('selected');
                     e.stopPropagation();
@@ -906,15 +938,16 @@ function renderPage(page, idx) {
 
     let pagin = document.createElement('div');
     pagin.className = "pagination";
-    pagin.innerText = `Page ${idx+1} / ${pages.length}`;
+    pagin.innerText = `Page ${idx + 1} / ${pages.length}`;
     div.appendChild(content);
     div.appendChild(pagin);
 
-    div.addEventListener('click', function() {
+    div.addEventListener('click', function () {
         selectedPage = idx;
         updateSelectionClass();
     });
-    if (idx === selectedPage) div.classList.add('selected');
+    if (idx === selectedPage)
+        div.classList.add('selected');
     return div;
 }
 
