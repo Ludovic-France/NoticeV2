@@ -18,8 +18,7 @@ function normalizeColWidths(tableObj) {
     if (!tableObj.colWidths || tableObj.colWidths.length === 0) return;
 
     let currentSum = 0;
-    // Utiliser une copie pour calculer la somme pour éviter les problèmes avec
-parseFloat sur des valeurs déjà modifiées
+    // Utiliser une copie pour calculer la somme pour éviter les problèmes avec parseFloat sur des valeurs déjà modifiées
     const widthsToSum = [...tableObj.colWidths];
     widthsToSum.forEach(w => currentSum += parseFloat(w));
 
@@ -27,13 +26,11 @@ parseFloat sur des valeurs déjà modifiées
         const factor = 100 / currentSum;
         let runningTotal = 0;
         for (let i = 0; i < tableObj.colWidths.length - 1; i++) {
-            const newWidth = parseFloat(widthsToSum[i]) * factor; // Utiliser la
- largeur originale pour le calcul
+            const newWidth = parseFloat(widthsToSum[i]) * factor; // Utiliser la largeur originale pour le calcul
             tableObj.colWidths[i] = newWidth.toFixed(2) + "%";
             runningTotal += newWidth;
         }
-        tableObj.colWidths[tableObj.colWidths.length - 1] = Math.max(0, (100 - r
-unningTotal)).toFixed(2) + "%";
+        tableObj.colWidths[tableObj.colWidths.length - 1] = Math.max(0, (100 - runningTotal)).toFixed(2) + "%";
     } else if (tableObj.colWidths.length > 0) {
         const equalShare = (100 / tableObj.colWidths.length);
         let runningTotal = 0;
@@ -41,8 +38,7 @@ unningTotal)).toFixed(2) + "%";
             tableObj.colWidths[i] = equalShare.toFixed(2) + "%";
             runningTotal += equalShare;
         }
-        tableObj.colWidths[tableObj.colWidths.length - 1] = Math.max(0, (100 - r
-unningTotal)).toFixed(2) + "%";
+        tableObj.colWidths[tableObj.colWidths.length - 1] = Math.max(0, (100 - runningTotal)).toFixed(2) + "%";
     }
 }
 
@@ -118,10 +114,8 @@ function initDocument() {
             let currentChapterPageObjects = [];
 
             if (chapEntry.H1) {
-                if (currentChapterPageObjects.length > 0) { // Devrait être vide
-, mais par sécurité
-                    pages.push({ type: 'chapter', objects: currentChapterPageObj
-ects });
+                if (currentChapterPageObjects.length > 0) { // Devrait être vide, mais par sécurité
+                    pages.push({ type: 'chapter', objects: currentChapterPageObjects });
                     orientation.push("portrait");
                     currentChapterPageObjects = [];
                 }
@@ -137,12 +131,10 @@ ects });
             if (chapEntry.H2_items && Array.isArray(chapEntry.H2_items)) {
                 chapEntry.H2_items.forEach(h2Entry => {
                     if (h2Entry.H2) {
-                        // Si currentChapterPageObjects contient déjà quelque ch
-ose (H1 ou H2/H3 précédent),
+                        // Si currentChapterPageObjects contient déjà quelque chose (H1 ou H2/H3 précédent),
                         // ce H2 commence sur une nouvelle page.
                         if (currentChapterPageObjects.length > 0) {
-                            pages.push({ type: 'chapter', objects: currentChapte
-rPageObjects });
+                            pages.push({ type: 'chapter', objects: currentChapterPageObjects });
                             orientation.push("portrait");
                             currentChapterPageObjects = [];
                         }
@@ -154,8 +146,7 @@ rPageObjects });
                             id: h2Entry.id || generateUniqueId()
                         });
 
-                        if (h2Entry.H3_items && Array.isArray(h2Entry.H3_items))
- {
+                        if (h2Entry.H3_items && Array.isArray(h2Entry.H3_items)) {
                             h2Entry.H3_items.forEach(h3Entry => {
                                 if (h3Entry.H3) {
                                     currentChapterPageObjects.push({
@@ -164,8 +155,7 @@ rPageObjects });
                                         originalText: h3Entry.H3,
                                         id: h3Entry.id || generateUniqueId()
                                     });
-                                    // Gérer H4 ici si nécessaire, en les ajouta
-nt à currentChapterPageObjects
+                                    // Gérer H4 ici si nécessaire, en les ajoutant à currentChapterPageObjects
                                 }
                             });
                         }
@@ -173,13 +163,10 @@ nt à currentChapterPageObjects
                 });
             }
 
-            // À la fin du traitement d'un chapEntry (qui peut contenir un H1 et
-/ou plusieurs H2),
-            // s'il reste des objets dans currentChapterPageObjects, ils forment
- la dernière page de ce bloc.
+            // À la fin du traitement d'un chapEntry (qui peut contenir un H1 et/ou plusieurs H2),
+            // s'il reste des objets dans currentChapterPageObjects, ils forment la dernière page de ce bloc.
             if (currentChapterPageObjects.length > 0) {
-                pages.push({ type: 'chapter', objects: currentChapterPageObjects
- });
+                pages.push({ type: 'chapter', objects: currentChapterPageObjects });
                 orientation.push("portrait");
             }
         });
@@ -205,8 +192,7 @@ function renderDocument() {
     updateSelectionClass();
 }
 
-// =================== NOUVELLES FONCTIONS DE GLISSER-DÉPOSER ==================
-=
+// =================== NOUVELLES FONCTIONS DE GLISSER-DÉPOSER ===================
 
 /**
  * Gère le survol d'un objet sur une zone de contenu de chapitre.
@@ -221,8 +207,7 @@ function handleDragOverChapter(event, container) {
     if (!indicator) {
         indicator = document.createElement('div');
         indicator.id = 'drop-indicator';
-        // On l'ajoute au conteneur courant pour qu'il soit positionné correctem
-ent
+        // On l'ajoute au conteneur courant pour qu'il soit positionné correctement
         container.appendChild(indicator);
     } else {
         // S'il existe mais n'est pas dans le bon conteneur, on le déplace
@@ -273,8 +258,7 @@ function handleDropInChapter(event, pageIdx) {
 
     // Calculer l'index de dépose avant de cacher l'indicateur
     let dropIndex = 0;
-    // La logique de calcul est plus simple : on compte le nombre d'éléments dra
-ggables avant l'indicateur
+    // La logique de calcul est plus simple : on compte le nombre d'éléments draggables avant l'indicateur
     for (const child of indicator.parentNode.children) {
         if (child.id === 'drop-indicator') break;
         if (child.draggable) dropIndex++;
@@ -292,40 +276,32 @@ ggables avant l'indicateur
     if (type) { // Dépose d'un nouvel objet depuis la barre d'outils
         let newObj = null;
         if (["h1", "h2", "h3", "h4"].includes(type))
-            newObj = { type: type, text: type.toUpperCase(), originalText: type.
-toUpperCase(), id: generateUniqueId() };
+            newObj = { type: type, text: type.toUpperCase(), originalText: type.toUpperCase(), id: generateUniqueId() };
         else if (type === "text")
             newObj = { type: "text", html: "Zone de texte" };
         else if (type === "table")
-            newObj = { type: "table", rows: [["", "", ""], ["", "", ""], ["", ""
-, ""]] };
+            newObj = { type: "table", rows: [["", "", ""], ["", "", ""], ["", "", ""]] };
 
         if (newObj) {
             destPage.objects.splice(dropIndex, 0, newObj);
             refreshNeeded = true;
         }
-    } else if (moveOidStr !== "" && movePageStr !== "") { // Déplacement d'un ob
-jet existant
+    } else if (moveOidStr !== "" && movePageStr !== "") { // Déplacement d'un objet existant
         const srcPageIdx = parseInt(movePageStr);
         const srcOid = parseInt(moveOidStr);
         const srcPage = pages[srcPageIdx];
 
-        if (srcPage && Array.isArray(srcPage.objects) && srcOid < srcPage.object
-s.length) {
+        if (srcPage && Array.isArray(srcPage.objects) && srcOid < srcPage.objects.length) {
             if (srcPageIdx === pageIdx) { // Déplacement sur la même page
-                if (srcOid === dropIndex || srcOid + 1 === dropIndex) return; //
- Ne rien faire si on le déplace au même endroit
+                if (srcOid === dropIndex || srcOid + 1 === dropIndex) return; // Ne rien faire si on le déplace au même endroit
 
                 const [objMoved] = srcPage.objects.splice(srcOid, 1);
-                // Si on déplace vers le bas, l'index de destination diminue de
-1
-                const finalDropIndex = (srcOid < dropIndex) ? dropIndex - 1 : dr
-opIndex;
+                // Si on déplace vers le bas, l'index de destination diminue de 1
+                const finalDropIndex = (srcOid < dropIndex) ? dropIndex - 1 : dropIndex;
                 destPage.objects.splice(finalDropIndex, 0, objMoved);
 
                 // Mettre à jour la sélection pour qu'elle suive l'objet
-                selectedElement = { pageIdx: pageIdx, objIdx: finalDropIndex, ty
-pe: objMoved.type };
+                selectedElement = { pageIdx: pageIdx, objIdx: finalDropIndex, type: objMoved.type };
                 refreshNeeded = true;
 
             } else { // Déplacement vers une autre page
@@ -333,8 +309,7 @@ pe: objMoved.type };
                 destPage.objects.splice(dropIndex, 0, objMoved);
 
                 // Mettre à jour la sélection
-                selectedElement = { pageIdx: pageIdx, objIdx: dropIndex, type: o
-bjMoved.type };
+                selectedElement = { pageIdx: pageIdx, objIdx: dropIndex, type: objMoved.type };
 
                 refreshNeeded = true;
                 paginatePage(srcPageIdx); // Paginer l'ancienne page
@@ -343,8 +318,7 @@ bjMoved.type };
     }
 
     if (refreshNeeded) {
-        updateAllChapterNumbers(); // Appeler la fonction principale qui gère le
- rendu et la pagination
+        updateAllChapterNumbers(); // Appeler la fonction principale qui gère le rendu et la pagination
         paginatePage(pageIdx);
     }
 }
@@ -379,8 +353,7 @@ function renderPage(page, idx) {
     revBox.className = "revision";
     revBox.innerHTML = `
         <div class="index">${INDEX_REV}</div>
-        <div class="num" contenteditable="${idx === 0 ? 'true' : 'false'}" spell
-check="false">${pages[0].editableNum || "900000"}</div>
+        <div class="num" contenteditable="${idx === 0 ? 'true' : 'false'}" spellcheck="false">${pages[0].editableNum || "900000"}</div>
     `;
     if (idx === 0) {
         let numDiv = revBox.querySelector('.num');
@@ -404,24 +377,19 @@ check="false">${pages[0].editableNum || "900000"}</div>
             page.title = title.innerText;
         });
         title.onclick = function(e) {
-            selectedElement = { pageIdx: idx, objIdx: "mainTitle", type: "mainTi
-tle" };
-            document.querySelectorAll('.selected').forEach(n => n.classList.remo
-ve('selected'));
+            selectedElement = { pageIdx: idx, objIdx: "mainTitle", type: "mainTitle" };
+            document.querySelectorAll('.selected').forEach(n => n.classList.remove('selected'));
             title.classList.add('selected');
             e.stopPropagation();
         };
-        if (selectedElement && selectedElement.pageIdx === idx && selectedElemen
-t.objIdx === "mainTitle")
+        if (selectedElement && selectedElement.pageIdx === idx && selectedElement.objIdx === "mainTitle")
             title.classList.add('selected');
         content.appendChild(title);
 
         let imgDrop = document.createElement('div');
         imgDrop.className = "img-drop";
-        imgDrop.innerHTML = page.img ? `<img src="${page.img}" alt="image">` : '
-<span>Glissez une image ici</span>';
-        imgDrop.ondragover = e => { e.preventDefault(); imgDrop.style.background
- ="#eef"; };
+        imgDrop.innerHTML = page.img ? `<img src="${page.img}" alt="image">` : '<span>Glissez une image ici</span>';
+        imgDrop.ondragover = e => { e.preventDefault(); imgDrop.style.background ="#eef"; };
         imgDrop.ondragleave = e => { imgDrop.style.background=""; };
         imgDrop.ondrop = e => {
             e.preventDefault();
@@ -456,8 +424,7 @@ t.objIdx === "mainTitle")
                     return;
                 }
             }
-            const url = e.clipboardData.getData('text/uri-list') || e.clipboardD
-ata.getData('text/plain');
+            const url = e.clipboardData.getData('text/uri-list') || e.clipboardData.getData('text/plain');
             if (url && /^https?:\/\//.test(url)) {
                 fetch(url)
                     .then(r => r.blob())
@@ -485,12 +452,9 @@ ata.getData('text/plain');
                 constructeurBlock.style.marginTop = "20px";
                 constructeurBlock.style.fontSize = "12pt";
                 constructeurBlock.style.textAlign = "left";
-                constructeurBlock.innerHTML = "<b>Constructeur : APA <br>Adresse
- :</b> 292 Rue de l'Epinette, 76320 CAUDEBEC Lès ELBEUF <br>☎️ +33 2.32.96.26.60
-";
+                constructeurBlock.innerHTML = "<b>Constructeur : APA <br>Adresse :</b> 292 Rue de l'Epinette, 76320 CAUDEBEC Lès ELBEUF <br>☎️ +33 2.32.96.26.60";
                 content.appendChild(constructeurBlock);
-    } else if (page.type === 'toc') { // TOC Principale (idx === 1 habituellemen
-t)
+    } else if (page.type === 'toc') { // TOC Principale (idx === 1 habituellement)
         let tocMainTitle = document.createElement('h2');
         tocMainTitle.innerText = "Sommaire";
                 tocMainTitle.style.padding = '0';
@@ -503,26 +467,22 @@ t)
         tocOl.style.margin   = "0 0 0 24px";
         tocOl.style.padding  = "0";
 
-        // Générer toutes les entrées du sommaire basées sur les titres des page
-s de chapitre
+        // Générer toutes les entrées du sommaire basées sur les titres des pages de chapitre
         let itemsAddedToTOC = 0;
-        for (let i = 2; i < pages.length; i++) { // Commencer à vérifier à parti
-r de la page d'index 2
+        for (let i = 2; i < pages.length; i++) { // Commencer à vérifier à partir de la page d'index 2
             const p = pages[i];
             if (p.type === 'toc_continued') continue;
 
             if (Array.isArray(p.objects)) {
                 p.objects.forEach(obj => {
-                    if (/^h[1-4]$/.test(obj.type) && (obj.originalText || obj.te
-xt)) {
+                    if (/^h[1-4]$/.test(obj.type) && (obj.originalText || obj.text)) {
                         let li = document.createElement("li");
                         const prefix = obj.calculatedPrefix || "";
                         const textValue = obj.originalText || obj.text || "";
                         const pageNumberOfTitle = i + 1;
                         const anchor = document.createElement('a');
                         anchor.href = `#live-title-${obj.id}`;
-                        anchor.innerHTML = `<span class="toc-title">${prefix}${t
-extValue}</span><span class="toc-page-num">${pageNumberOfTitle}</span>`;
+                        anchor.innerHTML = `<span class="toc-title">${prefix}${textValue}</span><span class="toc-page-num">${pageNumberOfTitle}</span>`;
                         li.appendChild(anchor);
                         const level = parseInt(obj.type[1]);
                         li.style.marginLeft = `${(level - 1) * 20}px`;
@@ -534,8 +494,7 @@ extValue}</span><span class="toc-page-num">${pageNumberOfTitle}</span>`;
         }
         content.appendChild(tocOl);
         if (itemsAddedToTOC === 0 && pages.length > 2) {
-            console.warn("TOC RENDER: Aucun titre (h1-h4) trouvé dans les pages
-de chapitre pour générer le sommaire.");
+            console.warn("TOC RENDER: Aucun titre (h1-h4) trouvé dans les pages de chapitre pour générer le sommaire.");
         }
     } else if (page.type === 'toc_continued') {
         let tocContinuedTitle = document.createElement('h2');
@@ -560,8 +519,7 @@ de chapitre pour générer le sommaire.");
         let objs = document.createElement('div');
         objs.className = "chapter-objects";
 
-        objs.addEventListener('dragover', (e) => handleDragOverChapter(e, objs))
-;
+        objs.addEventListener('dragover', (e) => handleDragOverChapter(e, objs));
         objs.addEventListener('dragleave', handleDragLeaveChapter);
         objs.addEventListener('drop', (e) => handleDropInChapter(e, idx));
 
@@ -574,8 +532,7 @@ de chapitre pour générer le sommaire.");
                 if (obj.id) {
                     el.id = `live-title-${obj.id}`;
                 }
-                el.innerText = (obj.calculatedPrefix || "") + (obj.originalText
-|| obj.text || "");
+                el.innerText = (obj.calculatedPrefix || "") + (obj.originalText || obj.text || "");
                 el.addEventListener("blur", () => {
                     const currentText = el.innerText;
                     const prefix = obj.calculatedPrefix || "";
@@ -593,10 +550,8 @@ de chapitre pour générer le sommaire.");
                                 el.className = "rte-area";
                                 el.innerHTML = obj.html || "";
 
-                                const insertImageIntoRTE = (targetDiv, imageSrc)
- => {
-                                        const img = document.createElement('img'
-);
+                                const insertImageIntoRTE = (targetDiv, imageSrc) => {
+                                        const img = document.createElement('img');
                                         img.src = imageSrc;
                                         img.style.maxWidth = '100%';
                                         img.style.maxHeight = '300px';
@@ -605,14 +560,11 @@ de chapitre pour générer le sommaire.");
                                         img.style.objectFit = "contain";
 
                                         const selection = window.getSelection();
-                                        if (selection.rangeCount > 0 && selectio
-n.anchorNode && targetDiv.contains(selection.anchorNode)) {
-                                                const range = selection.getRange
-At(0);
+                                        if (selection.rangeCount > 0 && selection.anchorNode && targetDiv.contains(selection.anchorNode)) {
+                                                const range = selection.getRangeAt(0);
                                                 range.deleteContents();
                                                 range.insertNode(img);
-                                                const newRange = document.create
-Range();
+                                                const newRange = document.createRange();
                                                 newRange.setStartAfter(img);
                                                 newRange.collapse(true);
                                                 selection.removeAllRanges();
@@ -624,22 +576,16 @@ Range();
                                 };
 
                                 el.addEventListener('paste', e => {
-                                        const items = (e.clipboardData || window
-.clipboardData).items;
+                                        const items = (e.clipboardData || window.clipboardData).items;
                                         for (let item of items) {
-                                                if (item.kind === 'file' && item
-.type.startsWith('image/')) {
+                                                if (item.kind === 'file' && item.type.startsWith('image/')) {
                                                         e.preventDefault();
-                                                        const file = item.getAsF
-ile();
-                                                        const reader = new FileR
-eader();
+                                                        const file = item.getAsFile();
+                                                        const reader = new FileReader();
                                                         reader.onload = () => {
-                                                                insertImageIntoR
-TE(el, reader.result);
+                                                                insertImageIntoRTE(el, reader.result);
                                                         };
-                                                        reader.readAsDataURL(fil
-e);
+                                                        reader.readAsDataURL(file);
                                                         return;
                                                 }
                                         }
@@ -658,38 +604,26 @@ e);
                                         e.preventDefault();
                                         el.style.outline = "none";
 
-                                        const dataType = e.dataTransfer.getData(
-"type");
+                                        const dataType = e.dataTransfer.getData("type");
 
                                         if (dataType === "icon") {
-                                                const iconIndex = parseInt(e.dat
-aTransfer.getData("icon"), 10);
-                                                if (typeof IconData !== "undefin
-ed" && IconData[iconIndex]) {
-                                                        insertImageIntoRTE(el, I
-conData[iconIndex].url);
+                                                const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
+                                                if (typeof IconData !== "undefined" && IconData[iconIndex]) {
+                                                        insertImageIntoRTE(el, IconData[iconIndex].url);
                                                 }
-                                        } else if (e.dataTransfer.files.length >
- 0) {
-                                                const file = e.dataTransfer.file
-s[0];
-                                                if (file.type.startsWith("image/
-")) {
-                                                        const reader = new FileR
-eader();
+                                        } else if (e.dataTransfer.files.length > 0) {
+                                                const file = e.dataTransfer.files[0];
+                                                if (file.type.startsWith("image/")) {
+                                                        const reader = new FileReader();
                                                         reader.onload = () => {
-                                                                insertImageIntoR
-TE(el, reader.result);
+                                                                insertImageIntoRTE(el, reader.result);
                                                         };
-                                                        reader.readAsDataURL(fil
-e);
+                                                        reader.readAsDataURL(file);
                                                 }
                                         } else {
-                                                const text = e.dataTransfer.getD
-ata('text/plain');
+                                                const text = e.dataTransfer.getData('text/plain');
                                                 if (text) {
-                                                        document.execCommand('in
-sertText', false, text);
+                                                        document.execCommand('insertText', false, text);
                                                 }
                                         }
                                 });
@@ -699,51 +633,38 @@ sertText', false, text);
                                         paginatePage(idx);
                                 });
             } else if (obj.type === "table") {
-                                if (obj.headerShaded === undefined) obj.headerSh
-aded = false;
+                                if (obj.headerShaded === undefined) obj.headerShaded = false;
                                 el = document.createElement('div');
                                 el.className = "table-container";
-                                let containerWidth = orientation[idx] === "portr
-ait" ? 710 : 1038;
+                                let containerWidth = orientation[idx] === "portrait" ? 710 : 1038;
                                 let table = document.createElement('table');
                                 table.className = "page-table";
                                 table.style.width = containerWidth + "px";
                                 table.style.maxWidth = containerWidth + "px";
                                 table.style.tableLayout = "fixed";
-                                let firstRow = obj.rows.find(r => r && r.length)
-;
+                                let firstRow = obj.rows.find(r => r && r.length);
                                 let nbCols = firstRow ? firstRow.length : 2;
-                                if (!obj.colWidths || obj.colWidths.length !== n
-bCols) {
+                                if (!obj.colWidths || obj.colWidths.length !== nbCols) {
                                         let defaultPx = containerWidth / nbCols;
-                                        obj.colWidths = Array(nbCols).fill(defau
-ltPx);
+                                        obj.colWidths = Array(nbCols).fill(defaultPx);
                                 } else {
-                                        let total = obj.colWidths.reduce((a, b)
-=> a + parseFloat(b || 0), 0);
+                                        let total = obj.colWidths.reduce((a, b) => a + parseFloat(b || 0), 0);
                                         if (total === 0 && nbCols > 0) {
-                                                let defaultPx = containerWidth /
- nbCols;
-                                                obj.colWidths = Array(nbCols).fi
-ll(defaultPx);
+                                                let defaultPx = containerWidth / nbCols;
+                                                obj.colWidths = Array(nbCols).fill(defaultPx);
                                                 total = containerWidth;
                                         }
                                         if (total > 0) {
-                                                let scale = containerWidth / tot
-al;
-                                                obj.colWidths = obj.colWidths.ma
-p(w => parseFloat(w || 0) * scale);
+                                                let scale = containerWidth / total;
+                                                obj.colWidths = obj.colWidths.map(w => parseFloat(w || 0) * scale);
                                         }
                                 }
-                                let colgroup = document.createElement('colgroup'
-);
+                                let colgroup = document.createElement('colgroup');
                                 let accumulated = 0;
                                 for (let c = 0; c < nbCols; c++) {
                                         let col = document.createElement('col');
-                                        let width = Math.round(obj.colWidths[c])
-;
-                                        if (c === nbCols - 1) width = containerW
-idth - accumulated;
+                                        let width = Math.round(obj.colWidths[c]);
+                                        if (c === nbCols - 1) width = containerWidth - accumulated;
                                         else accumulated += width;
                                         obj.colWidths[c] = width;
                                         col.style.width = width + "px";
@@ -752,10 +673,8 @@ idth - accumulated;
                                 table.appendChild(colgroup);
                                 let tbody = document.createElement('tbody');
 
-                                const insertImageIntoCell = (targetCell, imageSr
-c) => {
-                                        const img = document.createElement('img'
-);
+                                const insertImageIntoCell = (targetCell, imageSrc) => {
+                                        const img = document.createElement('img');
                                         img.src = imageSrc;
                                         img.style.maxWidth = "100%";
                                         img.style.maxHeight = "800px";
@@ -763,10 +682,8 @@ c) => {
                                         img.style.verticalAlign = "middle";
 
                                         const selection = window.getSelection();
-                                        if (selection.rangeCount > 0 && selectio
-n.anchorNode && targetCell.contains(selection.anchorNode)) {
-                                                const range = selection.getRange
-At(0);
+                                        if (selection.rangeCount > 0 && selection.anchorNode && targetCell.contains(selection.anchorNode)) {
+                                                const range = selection.getRangeAt(0);
                                                 range.deleteContents();
                                                 range.insertNode(img);
                                                 range.setStartAfter(img);
@@ -782,208 +699,132 @@ At(0);
                                 obj.rows.forEach((row, i) => {
                                         let tr = document.createElement('tr');
                                         if (i === 0 && obj.headerShaded) {
-                                                tr.style.backgroundColor = "#f5f
-5f5";
+                                                tr.style.backgroundColor = "#f5f5f5";
                                                 tr.style.fontWeight = "bold";
                                         }
-                                        for (let j = 0; j < (row ? row.length :
-0); j++) {
+                                        for (let j = 0; j < (row ? row.length : 0); j++) {
                                                 let cellData = row[j];
                                                 if (cellData === null) continue;
-                                                let td = document.createElement(
-'td');
+                                                let td = document.createElement('td');
                                                 td.contentEditable = "true";
-                                                td.style.verticalAlign = "middle
-";
+                                                td.style.verticalAlign = "middle";
                                                 td.style.overflow = "hidden";
                                                 td.style.position = "relative";
-                                                td.addEventListener('focus', ()
-=> {
-                                                        const range = document.c
-reateRange();
-                                                        range.selectNodeContents
-(td);
+                                                td.addEventListener('focus', () => {
+                                                        const range = document.createRange();
+                                                        range.selectNodeContents(td);
                                                         range.collapse(true);
-                                                        const sel = window.getSe
-lection();
+                                                        const sel = window.getSelection();
                                                         sel.removeAllRanges();
                                                         sel.addRange(range);
                                                 });
 
-                                                if (typeof cellData === "object"
- && cellData.image) {
-                                                         td.innerHTML = `<img sr
-c="${cellData.image}" style="max-width:100%;  object-fit:contain; vertical-align
-:middle;">`;
+                                                if (typeof cellData === "object" && cellData.image) {
+                                                         td.innerHTML = `<img src="${cellData.image}" style="max-width:100%;  object-fit:contain; vertical-align:middle;">`;
                                                 } else {
-                                                         td.innerHTML = (typeof
-cellData === "object" ? cellData.text : cellData) || "";
+                                                         td.innerHTML = (typeof cellData === "object" ? cellData.text : cellData) || "";
                                                 }
 
-                                                let colspan = (typeof cellData =
-== "object" && cellData.colspan) ? cellData.colspan : 1;
-                                                let align = (typeof cellData ===
- "object" && cellData.align) ? cellData.align : "left";
+                                                let colspan = (typeof cellData === "object" && cellData.colspan) ? cellData.colspan : 1;
+                                                let align = (typeof cellData === "object" && cellData.align) ? cellData.align : "left";
                                                 td.colSpan = colspan;
                                                 td.style.textAlign = align;
 
-                                                td.addEventListener('blur', () =
-> {
-                                                        if (typeof cellData ===
-"object" && cellData !== null) {
-                                                                cellData.text =
-td.innerHTML;
-                                                                delete cellData.
-image;
+                                                td.addEventListener('blur', () => {
+                                                        if (typeof cellData === "object" && cellData !== null) {
+                                                                cellData.text = td.innerHTML;
+                                                                delete cellData.image;
                                                         } else {
-                                                                obj.rows[i][j] =
- td.innerHTML;
+                                                                obj.rows[i][j] = td.innerHTML;
                                                         }
                                                         paginatePage(idx);
                                                 });
 
-                                                td.addEventListener('paste', e =
-> {
-                                                        const items = (e.clipboa
-rdData || window.clipboardData).items;
-                                                        for (let item of items)
-{
-                                                                if (item.kind ==
-= 'file' && item.type.startsWith('image/')) {
-                                                                        e.preven
-tDefault();
-                                                                        const fi
-le = item.getAsFile();
-                                                                        const re
-ader = new FileReader();
-                                                                        reader.o
-nload = () => {
-
-insertImageIntoCell(td, reader.result);
+                                                td.addEventListener('paste', e => {
+                                                        const items = (e.clipboardData || window.clipboardData).items;
+                                                        for (let item of items) {
+                                                                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                                                                        e.preventDefault();
+                                                                        const file = item.getAsFile();
+                                                                        const reader = new FileReader();
+                                                                        reader.onload = () => {
+                                                                                insertImageIntoCell(td, reader.result);
                                                                         };
-                                                                        reader.r
-eadAsDataURL(file);
+                                                                        reader.readAsDataURL(file);
                                                                         return;
                                                                 }
                                                         }
                                                 });
 
-                                                td.addEventListener('dragover',
-e => e.preventDefault());
-                                                td.addEventListener('drop', e =>
- {
+                                                td.addEventListener('dragover', e => e.preventDefault());
+                                                td.addEventListener('drop', e => {
                                                         e.preventDefault();
-                                                        const dataType = e.dataT
-ransfer.getData("type");
+                                                        const dataType = e.dataTransfer.getData("type");
 
-                                                        if (dataType === "icon")
- {
-                                                                const iconIndex
-= parseInt(e.dataTransfer.getData("icon"), 10);
-                                                                if (typeof IconD
-ata !== "undefined" && IconData[iconIndex]) {
-                                                                        insertIm
-ageIntoCell(td, IconData[iconIndex].url);
+                                                        if (dataType === "icon") {
+                                                                const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
+                                                                if (typeof IconData !== "undefined" && IconData[iconIndex]) {
+                                                                        insertImageIntoCell(td, IconData[iconIndex].url);
                                                                 }
-                                                        } else if (e.dataTransfe
-r.files.length > 0) {
-                                                                const file = e.d
-ataTransfer.files[0];
-                                                                if (file.type.st
-artsWith("image/")) {
-                                                                        const re
-ader = new FileReader();
-                                                                        reader.o
-nload = () => {
-
-insertImageIntoCell(td, reader.result);
+                                                        } else if (e.dataTransfer.files.length > 0) {
+                                                                const file = e.dataTransfer.files[0];
+                                                                if (file.type.startsWith("image/")) {
+                                                                        const reader = new FileReader();
+                                                                        reader.onload = () => {
+                                                                                insertImageIntoCell(td, reader.result);
                                                                         };
-                                                                        reader.r
-eadAsDataURL(file);
+                                                                        reader.readAsDataURL(file);
                                                                 }
                                                         } else {
-                                                                const text = e.d
-ataTransfer.getData('text/plain');
+                                                                const text = e.dataTransfer.getData('text/plain');
                                                                 if (text) {
-                                                                        document
-.execCommand('insertText', false, text);
+                                                                        document.execCommand('insertText', false, text);
                                                                 }
                                                         }
                                                 });
 
-                                                td.addEventListener('contextmenu
-', e => {
+                                                td.addEventListener('contextmenu', e => {
                                                         e.preventDefault();
-                                                        showTableMenu(e, obj, i,
- j);
-                                                        setTimeout(() => td.focu
-s(), 0);
+                                                        showTableMenu(e, obj, i, j);
+                                                        setTimeout(() => td.focus(), 0);
                                                 });
                                                 if (i === 0 && j < nbCols - 1) {
-                                                        let resizer = document.c
-reateElement('div');
-                                                        resizer.className = "col
--resizer";
-                                                        Object.assign(resizer.st
-yle, {
-                                                                position: "absol
-ute", top: "0", right: "-3px", width: "6px",
-                                                                height: "100%",
-cursor: "col-resize", zIndex: "10"
+                                                        let resizer = document.createElement('div');
+                                                        resizer.className = "col-resizer";
+                                                        Object.assign(resizer.style, {
+                                                                position: "absolute", top: "0", right: "-3px", width: "6px",
+                                                                height: "100%", cursor: "col-resize", zIndex: "10"
                                                         });
                                                         td.appendChild(resizer);
-                                                        resizer.addEventListener
-('mousedown', e => {
-                                                                e.preventDefault
-();
-                                                                const startX = e
-.pageX;
-                                                                const leftC = co
-lgroup.children[j];
-                                                                const rightC = c
-olgroup.children[j + 1];
-                                                                const wL = parse
-Float(obj.colWidths[j]);
-                                                                const wR = parse
-Float(obj.colWidths[j + 1]);
-                                                                document.body.st
-yle.cursor = "col-resize";
-                                                                function onMove(
-ev) {
-                                                                        let d =
-ev.pageX - startX;
-                                                                        let nl =
- wL + d, nr = wR - d;
-                                                                        if (nl <
- 30 || nr < 30) return;
-                                                                        obj.colW
-idths[j] = nl;
-                                                                        obj.colW
-idths[j + 1] = nr;
-                                                                        leftC.st
-yle.width = nl + "px";
-                                                                        rightC.s
-tyle.width = nr + "px";
+                                                        resizer.addEventListener('mousedown', e => {
+                                                                e.preventDefault();
+                                                                const startX = e.pageX;
+                                                                const leftC = colgroup.children[j];
+                                                                const rightC = colgroup.children[j + 1];
+                                                                const wL = parseFloat(obj.colWidths[j]);
+                                                                const wR = parseFloat(obj.colWidths[j + 1]);
+                                                                document.body.style.cursor = "col-resize";
+                                                                function onMove(ev) {
+                                                                        let d = ev.pageX - startX;
+                                                                        let nl = wL + d, nr = wR - d;
+                                                                        if (nl < 30 || nr < 30) return;
+                                                                        obj.colWidths[j] = nl;
+                                                                        obj.colWidths[j + 1] = nr;
+                                                                        leftC.style.width = nl + "px";
+                                                                        rightC.style.width = nr + "px";
                                                                 }
-                                                                function onUp()
-{
-                                                                        document
-.removeEventListener('mousemove', onMove);
-                                                                        document
-.removeEventListener('mouseup', onUp);
-                                                                        document
-.body.style.cursor = "";
+                                                                function onUp() {
+                                                                        document.removeEventListener('mousemove', onMove);
+                                                                        document.removeEventListener('mouseup', onUp);
+                                                                        document.body.style.cursor = "";
                                                                 }
-                                                                document.addEven
-tListener('mousemove', onMove);
-                                                                document.addEven
-tListener('mouseup', onUp);
+                                                                document.addEventListener('mousemove', onMove);
+                                                                document.addEventListener('mouseup', onUp);
                                                         });
                                                 }
                                                 tr.appendChild(td);
                                                 if (colspan > 1) {
-                                                        for (let k = 1; k < cols
-pan; k++) obj.rows[i][j + k] = null;
+                                                        for (let k = 1; k < colspan; k++) obj.rows[i][j + k] = null;
                                                         j += colspan - 1;
                                                 }
                                         }
@@ -998,10 +839,8 @@ pan; k++) obj.rows[i][j + k] = null;
                 el.classList.add('draggable-on-shift');
                 el.setAttribute("draggable", "true");
 
-                // NOUVEAU: Prévenir le comportement par défaut (sélection de te
-xte)
-                // lors d'un Shift+clic pour garantir que le dragstart se déclen
-che.
+                // NOUVEAU: Prévenir le comportement par défaut (sélection de texte)
+                // lors d'un Shift+clic pour garantir que le dragstart se déclenche.
                 // C'est la correction clé pour les tableaux et zones de texte.
                 el.addEventListener('mousedown', function(e) {
                     if (e.shiftKey) {
@@ -1010,8 +849,7 @@ che.
                 });
 
                 el.addEventListener('dragstart', function(e) {
-                    // On ne démarre le glisser-déposer que si la touche Shift e
-st maintenue
+                    // On ne démarre le glisser-déposer que si la touche Shift est maintenue
                     if (!e.shiftKey) {
                         e.preventDefault();
                         return;
@@ -1027,18 +865,14 @@ st maintenue
                 });
 
                 el.onclick = function(e) {
-                    if (e.shiftKey) return; // Empêche la sélection si on a essa
-yé de drag
-                    selectedElement = { pageIdx: idx, objIdx: oid, type: obj.typ
-e };
-                    document.querySelectorAll('.selected').forEach(n => n.classL
-ist.remove('selected'));
+                    if (e.shiftKey) return; // Empêche la sélection si on a essayé de drag
+                    selectedElement = { pageIdx: idx, objIdx: oid, type: obj.type };
+                    document.querySelectorAll('.selected').forEach(n => n.classList.remove('selected'));
                     el.classList.add('selected');
                     e.stopPropagation();
                 };
 
-                if (selectedElement && selectedElement.pageIdx === idx && select
-edElement.objIdx === oid)
+                if (selectedElement && selectedElement.pageIdx === idx && selectedElement.objIdx === oid)
                     el.classList.add('selected');
 
                 objs.appendChild(el);
@@ -1074,8 +908,7 @@ function updateAllChapterNumbers() {
                     for (let k = level + 1; k < 4; k++) {
                         hCounters[k] = 0;
                     }
-                    obj.calculatedPrefix = hCounters.slice(0, level + 1).join(".
-") + ". ";
+                    obj.calculatedPrefix = hCounters.slice(0, level + 1).join(".") + ". ";
                 }
             });
         }
@@ -1106,36 +939,27 @@ function updateAllChapterNumbers() {
             }
             safetyCounter++;
             if (safetyCounter > maxTocPages) {
-                console.error("[updateAllChapterNumbers] paginateToc loop safety
- break!");
+                console.error("[updateAllChapterNumbers] paginateToc loop safety break!");
                 break;
             }
-        } while (tocPaginationOccurred && currentPageIndexForToc < pages.length)
-;
+        } while (tocPaginationOccurred && currentPageIndexForToc < pages.length);
     }
 }
 
 function updateSelectionClass() {
-    document.querySelectorAll('.selected').forEach(el => el.classList.remove('se
-lected'));
+    document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
     let pagesList = document.querySelectorAll('.page');
-    if (pagesList[selectedPage]) pagesList[selectedPage].classList.add('selected
-');
+    if (pagesList[selectedPage]) pagesList[selectedPage].classList.add('selected');
     if (selectedElement) {
-        if (selectedElement.pageIdx === 0 && selectedElement.objIdx === "mainTit
-le") {
+        if (selectedElement.pageIdx === 0 && selectedElement.objIdx === "mainTitle") {
             let mainTitles = pagesList[0].querySelectorAll('.doc-title');
             if (mainTitles[1]) mainTitles[1].classList.add('selected');
-        } else if (selectedElement.pageIdx >= 0 && pagesList[selectedElement.pag
-eIdx]) {
-            const pageContent = pagesList[selectedElement.pageIdx].querySelector
-('.chapter-objects');
+        } else if (selectedElement.pageIdx >= 0 && pagesList[selectedElement.pageIdx]) {
+            const pageContent = pagesList[selectedElement.pageIdx].querySelector('.chapter-objects');
             if (pageContent) {
-               const contentElements = Array.from(pageContent.children).filter(c
-hild => child.draggable);
+               const contentElements = Array.from(pageContent.children).filter(child => child.draggable);
                if (contentElements[selectedElement.objIdx]) {
-                    contentElements[selectedElement.objIdx].classList.add('selec
-ted');
+                    contentElements[selectedElement.objIdx].classList.add('selected');
                }
             }
         }
@@ -1192,13 +1016,11 @@ function deletePage() {
         return;
     }
     if (pages.length <= 2) {
-        alert("Le document doit contenir au moins la page de garde et le sommair
-e.");
+        alert("Le document doit contenir au moins la page de garde et le sommaire.");
         return;
     }
 
-    const userConfirmed = window.confirm("Êtes-vous sûr de vouloir supprimer la
-page " + (selectedPage + 1) + " ?\nCette action est irréversible.");
+    const userConfirmed = window.confirm("Êtes-vous sûr de vouloir supprimer la page " + (selectedPage + 1) + " ?\nCette action est irréversible.");
 
     if (userConfirmed) {
         pages.splice(selectedPage, 1);
@@ -1222,12 +1044,10 @@ page " + (selectedPage + 1) + " ?\nCette action est irréversible.");
 function toggleOrientation(idx = null) {
     if (idx === null) idx = selectedPage;
     if (idx === 0 || idx === 1) {
-        alert("Impossible de changer l’orientation de la page de garde ou du som
-maire.");
+        alert("Impossible de changer l’orientation de la page de garde ou du sommaire.");
         return;
     }
-    orientation[idx] = (orientation[idx] === "portrait" ? "landscape" : "portrai
-t");
+    orientation[idx] = (orientation[idx] === "portrait" ? "landscape" : "portrait");
     renderDocument();
     paginatePage(idx);
 }
@@ -1254,12 +1074,10 @@ function openJSONFile(input) {
             pages.forEach(p => {
                 if (Array.isArray(p.objects)) {
                     p.objects.forEach(obj => {
-                        if ((obj.type === "chapterTitle" || /^h[1-4]$/.test(obj.
-type)) && obj.text && obj.originalText === undefined) {
+                        if ((obj.type === "chapterTitle" || /^h[1-4]$/.test(obj.type)) && obj.text && obj.originalText === undefined) {
                             obj.originalText = obj.text;
                         }
-                        if ((obj.type === "chapterTitle" || /^h[1-4]$/.test(obj.
-type)) && !obj.id) {
+                        if ((obj.type === "chapterTitle" || /^h[1-4]$/.test(obj.type)) && !obj.id) {
                             obj.id = generateUniqueId();
                         }
                     });
@@ -1292,8 +1110,7 @@ function paginateToc(tocPageIndex) {
     if (tocPageIndex === 0 || tocPageIndex >= pages.length) return false;
 
     const tocPageData = pages[tocPageIndex];
-    if (tocPageData.type !== 'toc' && tocPageData.type !== 'toc_continued') retu
-rn false;
+    if (tocPageData.type !== 'toc' && tocPageData.type !== 'toc_continued') return false;
 
     const allPageDivs = document.querySelectorAll('#pages-container > .page');
     if (tocPageIndex >= allPageDivs.length) return false;
@@ -1315,21 +1132,17 @@ rn false;
     const contentPaddingTop = parseFloat(contentStyle.paddingTop) || 0;
     const contentPaddingBottom = parseFloat(contentStyle.paddingBottom) || 0;
     const tocTitleElement = contentDiv.querySelector('h2');
-    const tocTitleHeight = tocTitleElement ? tocTitleElement.offsetHeight + (par
-seFloat(getComputedStyle(tocTitleElement).marginBottom) || 0) : 0;
-    const availableHeightForOl = pageHeight - headerHeight - contentPaddingTop -
- contentPaddingBottom - paginationHeight - tocTitleHeight - 20;
+    const tocTitleHeight = tocTitleElement ? tocTitleElement.offsetHeight + (parseFloat(getComputedStyle(tocTitleElement).marginBottom) || 0) : 0;
+    const availableHeightForOl = pageHeight - headerHeight - contentPaddingTop - contentPaddingBottom - paginationHeight - tocTitleHeight - 20;
 
     let accumulatedHeight = 0;
     let splitAtLiIndex = -1;
-    const liItems = Array.from(tocOlElement.children).filter(child => child.tagN
-ame === 'LI');
+    const liItems = Array.from(tocOlElement.children).filter(child => child.tagName === 'LI');
 
     for (let i = 0; i < liItems.length; i++) {
         const li = liItems[i];
         const liStyle = getComputedStyle(li);
-        const totalLiHeight = li.offsetHeight + (parseFloat(liStyle.marginTop) |
-| 0) + (parseFloat(liStyle.marginBottom) || 0);
+        const totalLiHeight = li.offsetHeight + (parseFloat(liStyle.marginTop) || 0) + (parseFloat(liStyle.marginBottom) || 0);
 
         if (accumulatedHeight + totalLiHeight > availableHeightForOl) {
             splitAtLiIndex = (i > 0) ? i : (liItems.length > 1 ? 0 : -1);
@@ -1341,8 +1154,7 @@ ame === 'LI');
     if (splitAtLiIndex > -1) {
         const nodesToMove = liItems.slice(splitAtLiIndex);
         let nextPageIdx = tocPageIndex + 1;
-        const newPageTocContinued = { type: 'toc_continued', tocItemsToRender: n
-odesToMove.map(node => node.cloneNode(true)) };
+        const newPageTocContinued = { type: 'toc_continued', tocItemsToRender: nodesToMove.map(node => node.cloneNode(true)) };
 
         pages.splice(nextPageIdx, 0, newPageTocContinued);
         orientation.splice(nextPageIdx, 0, orientation[tocPageIndex]);
@@ -1357,20 +1169,16 @@ odesToMove.map(node => node.cloneNode(true)) };
 /* ------- Gestion des Risques Sélectionnés ------- */
 function appliquerRisquesSelectionnes() {
     if (typeof ALL_RISKS === 'undefined' || !Array.isArray(ALL_RISKS)) {
-        console.error("ALL_RISKS n'est pas défini ou n'est pas un tableau. Assur
-ez-vous que constante.js est chargé et correct.");
-        alert("Erreur : Les définitions des risques ne sont pas chargées ou sont
- incorrectes.");
+        console.error("ALL_RISKS n'est pas défini ou n'est pas un tableau. Assurez-vous que constante.js est chargé et correct.");
+        alert("Erreur : Les définitions des risques ne sont pas chargées ou sont incorrectes.");
         return;
     }
 
     let contentAddedOverall = false;
 
     ALL_RISKS.forEach(risque => {
-        if (!risque || !risque.id || !risque.chapitreTargetName || !risque.titre
-Type || !/^h[1-4]$/.test(risque.titreType)) {
-            console.warn("Objet risque malformé ou type de titre de risque inval
-ide dans ALL_RISKS:", risque);
+        if (!risque || !risque.id || !risque.chapitreTargetName || !risque.titreType || !/^h[1-4]$/.test(risque.titreType)) {
+            console.warn("Objet risque malformé ou type de titre de risque invalide dans ALL_RISKS:", risque);
             return;
         }
 
@@ -1379,8 +1187,7 @@ ide dans ALL_RISKS:", risque);
 
         const niveauTitreRisque = parseInt(risque.titreType.substring(1));
         if (niveauTitreRisque <= 1) {
-            alert(`Le risque "${risque.titreText}" (${risque.titreType}) ne peut
- pas être automatiquement placé car il est de niveau H1.`);
+            alert(`Le risque "${risque.titreText}" (${risque.titreType}) ne peut pas être automatiquement placé car il est de niveau H1.`);
             return;
         }
 
@@ -1392,30 +1199,23 @@ ide dans ALL_RISKS:", risque);
             if (page.objects && Array.isArray(page.objects)) {
                 for (let j = 0; j < page.objects.length; j++) {
                     const currentObj = page.objects[j];
-                    if (currentObj.type === parentTitreType && (currentObj.origi
-nalText || currentObj.text || "").trim().toLowerCase() === risque.chapitreTarget
-Name.trim().toLowerCase()) {
+                    if (currentObj.type === parentTitreType && (currentObj.originalText || currentObj.text || "").trim().toLowerCase() === risque.chapitreTargetName.trim().toLowerCase()) {
 
                         let alreadyExists = false;
                         if (j + 1 < page.objects.length) {
                             const nextObj = page.objects[j + 1];
-                            if (nextObj.type === risque.titreType && (nextObj.te
-xt === risque.titreText || nextObj.originalText === risque.titreText)) {
+                            if (nextObj.type === risque.titreType && (nextObj.text === risque.titreText || nextObj.originalText === risque.titreText)) {
                                 alreadyExists = true;
                             }
                         }
 
                         if (!alreadyExists) {
-                            const newTitleObj = { type: risque.titreType, text:
-risque.titreText, originalText: risque.titreText, id: generateUniqueId() };
-                            const newContentObj = { type: "text", html: risque.c
-ontenuHTML };
-                            page.objects.splice(j + 1, 0, newTitleObj, newConten
-tObj);
+                            const newTitleObj = { type: risque.titreType, text: risque.titreText, originalText: risque.titreText, id: generateUniqueId() };
+                            const newContentObj = { type: "text", html: risque.contenuHTML };
+                            page.objects.splice(j + 1, 0, newTitleObj, newContentObj);
                             contentAddedOverall = true;
                         }
-                        parentFound = true; // On considère le parent traité, m
-ême si le contenu existait déjà
+                        parentFound = true; // On considère le parent traité, même si le contenu existait déjà
                         break;
                     }
                 }
@@ -1424,18 +1224,15 @@ tObj);
         }
 
         if (!parentFound) {
-            alert(`Le titre parent "${risque.chapitreTargetName}" (type ${parent
-TitreType}) n'a pas été trouvé pour le risque "${risque.titreText}".`);
+            alert(`Le titre parent "${risque.chapitreTargetName}" (type ${parentTitreType}) n'a pas été trouvé pour le risque "${risque.titreText}".`);
         }
     });
 
     if (contentAddedOverall) {
         updateAllChapterNumbers();
-        alert("Les nouveaux risques sélectionnés ont été appliqués aux sections
-correspondantes.");
+        alert("Les nouveaux risques sélectionnés ont été appliqués aux sections correspondantes.");
     } else {
-        alert("Aucun nouveau risque à ajouter, ou les sections parentes n'ont pa
-s été trouvées ou le contenu existait déjà.");
+        alert("Aucun nouveau risque à ajouter, ou les sections parentes n'ont pas été trouvées ou le contenu existait déjà.");
     }
 }
 
@@ -1453,8 +1250,7 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         zIndex: 10000, boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
         fontSize: "1em", padding: "4px 0"
     });
-    menu._originTable = e.currentTarget.closest('.table-container').querySelecto
-r('table');
+    menu._originTable = e.currentTarget.closest('.table-container').querySelector('table');
     function alignItem(label, align) {
         let item = document.createElement('div');
         item.innerText = label;
@@ -1467,8 +1263,7 @@ r('table');
             else obj.rows[rowIdx][colIdx] = { text: c, align };
             const td = menu._originTable.rows[rowIdx].cells[colIdx];
             td.style.textAlign = align;
-            // restoreCaret(); // Cette fonction n'est pas définie, commenter po
-ur l'instant
+            // restoreCaret(); // Cette fonction n'est pas définie, commenter pour l'instant
             menu.remove();
         };
         menu.appendChild(item);
@@ -1497,17 +1292,14 @@ ur l'instant
         item.onclick = () => { fn(); menu.remove(); renderDocument(); };
         return item;
     }
-    menu.appendChild(menuItem(obj.headerShaded ? "Désactiver gris de la 1ʳᵉ lign
-e" : "Griser la 1ʳᵉ ligne", () => {
+    menu.appendChild(menuItem(obj.headerShaded ? "Désactiver gris de la 1ʳᵉ ligne" : "Griser la 1ʳᵉ ligne", () => {
         obj.headerShaded = !obj.headerShaded;
     }));
     menu.appendChild(document.createElement('hr'));
     menu.appendChild(structuralItem("Ajouter colonne à droite", () => {
         obj.rows.forEach(row => row.splice(colIdx + 1, 0, ""));
-        const w = obj.colWidths[colIdx]; // Problème potentiel si colIdx est la
-dernière
-        obj.colWidths.splice(colIdx + 1, 0, w); // Duplique la largeur, normalis
-ation nécessaire après
+        const w = obj.colWidths[colIdx]; // Problème potentiel si colIdx est la dernière
+        obj.colWidths.splice(colIdx + 1, 0, w); // Duplique la largeur, normalisation nécessaire après
         normalizeColWidths(obj); // Appel à la normalisation
         }));
     menu.appendChild(structuralItem("Ajouter ligne dessous", () => {
@@ -1532,14 +1324,12 @@ ation nécessaire après
                     let text = cd.text || "";
                     obj.rows[r][colIdx] = text;
                     for (let k = 1; k < cd.colspan; k++) {
-                        if (obj.rows[r][colIdx + k] !== undefined) obj.rows[r][c
-olIdx + k] = "";
+                        if (obj.rows[r][colIdx + k] !== undefined) obj.rows[r][colIdx + k] = "";
                     }
                 }
             }
             obj.rows.forEach(row => row.splice(colIdx, 1));
-            obj.colWidths.splice(colIdx, 1); // Supprimer aussi la largeur de co
-lonne
+            obj.colWidths.splice(colIdx, 1); // Supprimer aussi la largeur de colonne
             normalizeColWidths(obj); // Appel à la normalisation
         }));
     }
@@ -1548,26 +1338,19 @@ lonne
             obj.rows.splice(rowIdx, 1);
         }));
     }
-    if (colIdx < obj.rows[rowIdx].length - 1 && obj.rows[rowIdx][colIdx+1] !== n
-ull) { // S'assurer qu'il y a une cellule à droite et qu'elle n'est pas déjà par
-tie d'une fusion
+    if (colIdx < obj.rows[rowIdx].length - 1 && obj.rows[rowIdx][colIdx+1] !== null) { // S'assurer qu'il y a une cellule à droite et qu'elle n'est pas déjà partie d'une fusion
         menu.appendChild(structuralItem("Fusionner à droite", () => {
             let cur = obj.rows[rowIdx][colIdx];
             let next = obj.rows[rowIdx][colIdx + 1];
-            let currentText = (typeof cur === "object" && !cur.image) ? cur.text
- : (cur || "");
-            let nextText = (typeof next === "object" && !next.image) ? next.text
- : (next || "");
-            let newColspan = ((typeof cur === "object" && cur.colspan) ? cur.col
-span : 1) +
-                             ((typeof next === "object" && next.colspan) ? next.
-colspan : 1);
+            let currentText = (typeof cur === "object" && !cur.image) ? cur.text : (cur || "");
+            let nextText = (typeof next === "object" && !next.image) ? next.text : (next || "");
+            let newColspan = ((typeof cur === "object" && cur.colspan) ? cur.colspan : 1) +
+                             ((typeof next === "object" && next.colspan) ? next.colspan : 1);
 
             obj.rows[rowIdx][colIdx] = {
                 text: currentText + " " + nextText,
                 colspan: newColspan,
-                align: (typeof cur === "object" ? cur.align : "left") // Conserv
-er l'alignement de la cellule de gauche
+                align: (typeof cur === "object" ? cur.align : "left") // Conserver l'alignement de la cellule de gauche
             };
             // Marquer les cellules suivantes comme null pour la fusion
             for(let k=1; k < newColspan; k++){
@@ -1575,10 +1358,8 @@ er l'alignement de la cellule de gauche
                      obj.rows[rowIdx][colIdx+k] = null;
                 }
             }
-            // Recalculer proprement les indices pour splice si d'autres fusions
- existent
-            let cellsToRemove = ((typeof next === "object" && next.colspan) ? ne
-xt.colspan : 1);
+            // Recalculer proprement les indices pour splice si d'autres fusions existent
+            let cellsToRemove = ((typeof next === "object" && next.colspan) ? next.colspan : 1);
             obj.rows[rowIdx].splice(colIdx + 1, cellsToRemove);
 
 
@@ -1589,27 +1370,22 @@ xt.colspan : 1);
             let n = cellData.colspan;
             let currentText = cellData.text || "";
             // Diviser le texte approximativement si possible (simpliste)
-            let partText = currentText.substring(0, Math.ceil(currentText.length
- / n));
-            obj.rows[rowIdx][colIdx] = {text: partText, align: cellData.align};
-// Remettre la première partie
+            let partText = currentText.substring(0, Math.ceil(currentText.length / n));
+            obj.rows[rowIdx][colIdx] = {text: partText, align: cellData.align};// Remettre la première partie
 
             for (let i = 1; i < n; i++) {
                  // Insérer des cellules vides pour les parties scindées
-                obj.rows[rowIdx].splice(colIdx + i, 0, {text: "", align: cellDat
-a.align});
+                obj.rows[rowIdx].splice(colIdx + i, 0, {text: "", align: cellData.align});
             }
         }));
     }
     document.body.appendChild(menu);
     document.addEventListener('mousedown', function hideMenu(ev) {
-        if (menu && !menu.contains(ev.target)) { // Vérifier si menu existe enco
-re
+        if (menu && !menu.contains(ev.target)) { // Vérifier si menu existe encore
             menu.remove();
             document.removeEventListener('mousedown', hideMenu);
         }
-    }, { once: false }); // {once: true} peut être problématique si le menu est
-recréé rapidement
+    }, { once: false }); // {once: true} peut être problématique si le menu est recréé rapidement
 }
 
 function exportCleanHTML() {
@@ -1622,8 +1398,7 @@ function exportCleanHTML() {
     <style>
         body {
             background: #fff;
-            font-family: 'Segoe UI', 'Arial', sans-serif; /* Police du mode édit
-ion */
+            font-family: 'Segoe UI', 'Arial', sans-serif; /* Police du mode édition */
             font-size: 12pt;
             margin: 0;
             padding: 0;
@@ -1637,10 +1412,8 @@ ion */
             box-shadow: none !important;
                         border: 1px solid #555 !important;
             border-radius: 3px !important;
-            margin: 0 auto 10mm auto !important; /* Marge en bas pour séparation
- visuelle, auto pour centrer */
-            padding: 10mm 15mm 10mm 15mm !important; /* Marges A4 approx (H, D,
-B, G) */
+            margin: 0 auto 10mm auto !important; /* Marge en bas pour séparation visuelle, auto pour centrer */
+            padding: 10mm 15mm 10mm 15mm !important; /* Marges A4 approx (H, D, B, G) */
             overflow: hidden !important;
             display: flex !important;
             flex-direction: column !important;
@@ -1668,8 +1441,7 @@ B, G) */
             justify-content: space-between;
         }
         .header .logo {
-            height: 60px; /* Conserver une taille fixe ou la rendre relative si
-possible */
+            height: 60px; /* Conserver une taille fixe ou la rendre relative si possible */
             width: 60px;
             object-fit: contain;
         }
@@ -1697,8 +1469,7 @@ possible */
             gap: 12px !important;
             box-sizing: border-box !important;
             width: 100% !important;
-            display: flex; /* Ajouté pour que les éléments enfants puissent être
- gérés */
+            display: flex; /* Ajouté pour que les éléments enfants puissent être gérés */
             flex-direction: column; /* Les objets sont empilés verticalement */
             align-items: normal; /* Ou 'stretch' selon le besoin */
         }
@@ -1708,14 +1479,12 @@ possible */
             bottom: 5mm !important;
             left: 15mm !important;
             right: 15mm !important;
-            text-align: right !important; /* Modifié pour aligner à droite comme
- demandé précédemment */
+            text-align: right !important; /* Modifié pour aligner à droite comme demandé précédemment */
             font-size: 10pt !important;
             color: #000 !important;
             width: auto !important;
         }
-        .page .img-drop { /* Pour la page de garde si une image y est présente *
-/
+        .page .img-drop { /* Pour la page de garde si une image y est présente */
             border: none !important;
             min-height: 10cm; /* Hauteur indicative, sera remplie par l'image */
             max-height: 15cm;
@@ -1741,8 +1510,7 @@ possible */
         .page-table {
             width: 100% !important;
             border-collapse: collapse !important;
-            table-layout: fixed !important; /* ou auto si le contenu doit dicter
- la largeur */
+            table-layout: fixed !important; /* ou auto si le contenu doit dicter la largeur */
             margin: 10px 0;
         }
         .page-table th, .page-table td {
@@ -1756,8 +1524,7 @@ possible */
             background: #eee !important;
             font-weight: bold;
         }
-        .page .chapter-title, .page h1, .page h2, .page h3, .page h4 { /* Styles
- pour les titres */
+        .page .chapter-title, .page h1, .page h2, .page h3, .page h4 { /* Styles pour les titres */
             color: #000 !important;
             font-weight: bold;
             margin: 20px 0 10px 0;
@@ -1788,26 +1555,16 @@ possible */
 `;
     pages.forEach((pageData, idx) => {
         const pageOrientation = orientation[idx] || 'portrait';
-        html += `<div class="page ${pageOrientation === 'landscape' ? 'landscape
-' : ''}">`;
-        html += `<div class="header"><img class="logo" src="${(typeof logoData !
-== "undefined" && logoData.url) ? logoData.url : ''}" alt="Logo"><div class="doc
--title">${pages[0].docTitle || "Titre du document"}</div><div class="revision"><
-div class="index">${INDEX_REV}</div><div class="num">${pages[0].editableNum || N
-UM_REF}</div></div></div>`;
+        html += `<div class="page ${pageOrientation === 'landscape' ? 'landscape' : ''}">`;
+        html += `<div class="header"><img class="logo" src="${(typeof logoData !== "undefined" && logoData.url) ? logoData.url : ''}" alt="Logo"><div class="doc-title">${pages[0].docTitle || "Titre du document"}</div><div class="revision"><div class="index">${INDEX_REV}</div><div class="num">${pages[0].editableNum || NUM_REF}</div></div></div>`;
         html += `<div class="content">`;
         if (idx === 0) {
-            html += `<div class="cover-title">${pageData.title || "Notice"}</div
->`;
+            html += `<div class="cover-title">${pageData.title || "Notice"}</div>`;
             if (pageData.img) {
-                html += `<div class="img-drop"><img src="${pageData.img}" alt="I
-mage de couverture"></div>`;
+                html += `<div class="img-drop"><img src="${pageData.img}" alt="Image de couverture"></div>`;
             }
             // Ajout du bloc constructeur pour l'export aussi
-            html += `<div class="constructeur-info" style="border: 2px solid #00
-0; padding: 10px; margin-top: 20px; font-size: 12pt; text-align: left;"><b>Const
-ructeur : APA <br>Adresse :</b> 292 Rue de l'Epinette, 76320 CAUDEBEC Lès ELBEUF
- <br>☎️ +33 2.32.96.26.60</div>`;
+            html += `<div class="constructeur-info" style="border: 2px solid #000; padding: 10px; margin-top: 20px; font-size: 12pt; text-align: left;"><b>Constructeur : APA <br>Adresse :</b> 292 Rue de l'Epinette, 76320 CAUDEBEC Lès ELBEUF <br>☎️ +33 2.32.96.26.60</div>`;
 
         } else if (idx === 1) {
             html += `<h2>Sommaire</h2>`;
@@ -1816,17 +1573,13 @@ ructeur : APA <br>Adresse :</b> 292 Rue de l'Epinette, 76320 CAUDEBEC Lès ELBEU
                 const p = pages[i];
                 if (Array.isArray(p.objects)) {
                     p.objects.forEach(obj => {
-                        if (/^h[1-4]$/.test(obj.type) && (obj.originalText || ob
-j.text) && obj.id) {
+                        if (/^h[1-4]$/.test(obj.type) && (obj.originalText || obj.text) && obj.id) {
                             const prefix = obj.calculatedPrefix || "";
-                            const textValue = obj.originalText || obj.text || ""
-;
+                            const textValue = obj.originalText || obj.text || "";
                             const level = parseInt(obj.type[1]);
                             const pageNumberOfTitleExport = i + 1;
                             const anchorId = `export-title-${obj.id}`;
-                            html += `<li style="margin-left: ${(level - 1) * 20}
-px;"><a href="#${anchorId}"><span class="toc-title">${prefix}${textValue}</span>
-<span class="toc-page-num">${pageNumberOfTitleExport}</span></a></li>`;
+                            html += `<li style="margin-left: ${(level - 1) * 20}px;"><a href="#${anchorId}"><span class="toc-title">${prefix}${textValue}</span><span class="toc-page-num">${pageNumberOfTitleExport}</span></a></li>`;
                         }
                     });
                 }
@@ -1835,36 +1588,27 @@ px;"><a href="#${anchorId}"><span class="toc-title">${prefix}${textValue}</span>
         } else {
             if (Array.isArray(pageData.objects)) {
                 pageData.objects.forEach(obj => {
-                    if (obj.type === "chapterTitle" || /^h[1-4]$/.test(obj.type)
-) {
+                    if (obj.type === "chapterTitle" || /^h[1-4]$/.test(obj.type)) {
                         const prefix = obj.calculatedPrefix || "";
                         const text = obj.originalText || obj.text || "";
                         const anchorId = obj.id ? `export-title-${obj.id}` : '';
-                        html += `<div class="${obj.type}" ${anchorId ? `id="${an
-chorId}"` : ''}>${prefix}${text}</div>`;
+                        html += `<div class="${obj.type}" ${anchorId ? `id="${anchorId}"` : ''}>${prefix}${text}</div>`;
                     } else if (obj.type === "text") {
                         html += `<div class="rte-area">${obj.html || ""}</div>`;
                     } else if (obj.type === "table") {
                         let tableStyle = 'width:100%;';
-                        html += `<table class="page-table" style="${tableStyle}"
->`;
-                        if (obj.colWidths && Array.isArray(obj.colWidths) && obj
-.colWidths.length > 0) {
+                        html += `<table class="page-table" style="${tableStyle}">`;
+                        if (obj.colWidths && Array.isArray(obj.colWidths) && obj.colWidths.length > 0) {
                             html += `<colgroup>`;
-                            let totalWidthDefined = obj.colWidths.reduce((sum, w
-) => sum + parseFloat(w || 0), 0);
+                            let totalWidthDefined = obj.colWidths.reduce((sum, w) => sum + parseFloat(w || 0), 0);
                             if (totalWidthDefined > 0) {
                                 obj.colWidths.forEach(widthPx => {
-                                    const percent = (parseFloat(widthPx || 0) /
-totalWidthDefined) * 100;
-                                    html += `<col style="width: ${percent.toFixe
-d(2)}%;">`;
+                                    const percent = (parseFloat(widthPx || 0) / totalWidthDefined) * 100;
+                                    html += `<col style="width: ${percent.toFixed(2)}%;">`;
                                 });
-                            } else { // Fallback if widths are not properly defi
-ned
+                            } else { // Fallback if widths are not properly defined
                                 const equalPercent = 100 / obj.colWidths.length;
-                                obj.colWidths.forEach(() => html += `<col style=
-"width: ${equalPercent.toFixed(2)}%;">`);
+                                obj.colWidths.forEach(() => html += `<col style="width: ${equalPercent.toFixed(2)}%;">`);
                             }
                             html += `</colgroup>`;
                         }
@@ -1874,16 +1618,13 @@ ned
                                 if (Array.isArray(row)) {
                                     row.forEach(cell => {
                                         if (cell === null) return;
-                                        const cellTag = (rowIndex === 0 && obj.h
-eaderShaded) ? 'th' : 'td';
+                                        const cellTag = (rowIndex === 0 && obj.headerShaded) ? 'th' : 'td';
                                         let cellContent = '';
                                         let colspan = 1;
                                         let textAlign = 'left';
-                                        if (typeof cell === "object" && cell !==
- null) {
+                                        if (typeof cell === "object" && cell !== null) {
                                             if (cell.image) {
-                                                cellContent = `<img src="${cell.
-image}" style="max-width:100%; height:auto; display:block;">`;
+                                                cellContent = `<img src="${cell.image}" style="max-width:100%; height:auto; display:block;">`;
                                             } else {
                                                 cellContent = cell.text || "";
                                             }
@@ -1892,8 +1633,7 @@ image}" style="max-width:100%; height:auto; display:block;">`;
                                         } else {
                                             cellContent = cell || "";
                                         }
-                                        html += `<${cellTag} colspan="${colspan}
-" style="text-align:${textAlign};">${cellContent}</${cellTag}>`;
+                                        html += `<${cellTag} colspan="${colspan}" style="text-align:${textAlign};">${cellContent}</${cellTag}>`;
                                     });
                                 }
                                 html += `</tr>`;
@@ -1905,8 +1645,7 @@ image}" style="max-width:100%; height:auto; display:block;">`;
             }
         }
         html += `</div>`;
-        html += `<div class="pagination">Page ${idx + 1} / ${pages.length}</div>
-`;
+        html += `<div class="pagination">Page ${idx + 1} / ${pages.length}</div>`;
         html += `</div>`;
     });
     html += `</body></html>`;
@@ -1925,94 +1664,68 @@ function paginateObjects(idx, isRecursiveCall = false) {
     // On exclut la page de garde (idx === 0) et les index hors limites.
     // La page du Sommaire (idx === 1) sera maintenant traitée.
     if (idx === 0 || idx >= pages.length) {
-        if (!isRecursiveCall) console.log(`paginateObjects: Page ${idx} non élig
-ible pour pagination (couverture ou hors limites).`);
+        if (!isRecursiveCall) console.log(`paginateObjects: Page ${idx} non éligible pour pagination (couverture ou hors limites).`);
         return;
     }
 
     setTimeout(() => {
-        const allPageDivs = document.querySelectorAll('#pages-container > .page'
-);
+        const allPageDivs = document.querySelectorAll('#pages-container > .page');
         if (idx >= allPageDivs.length) {
-            console.warn(`paginateObjects: Index ${idx} hors limites pour les di
-vs de page rendues (longueur ${allPageDivs.length}). Probablement besoin d'un re
-nderDocument() avant cet appel.`);
+            console.warn(`paginateObjects: Index ${idx} hors limites pour les divs de page rendues (longueur ${allPageDivs.length}). Probablement besoin d'un renderDocument() avant cet appel.`);
             return;
         }
 
         const currentPageData = pages[idx];
         const thisPageDiv = allPageDivs[idx];
 
-        // Déterminer si c'est une page de sommaire ou une page de chapitre stan
-dard
-        const isTocPage = (currentPageData.type === 'toc' || currentPageData.typ
-e === 'toc_continued');
-        let itemsToPaginate = []; // Les éléments réels à mesurer et potentielle
-ment déplacer (DOM nodes)
-        let sourceDataArray = null; // Le tableau de données source (ex: page.ob
-jects) - pertinent pour les chapitres
-        let itemContainerDiv = null; // Le conteneur DOM des items (ex: .chapter
--objects ou #table-of-contents)
+        // Déterminer si c'est une page de sommaire ou une page de chapitre standard
+        const isTocPage = (currentPageData.type === 'toc' || currentPageData.type === 'toc_continued');
+        let itemsToPaginate = []; // Les éléments réels à mesurer et potentiellement déplacer (DOM nodes)
+        let sourceDataArray = null; // Le tableau de données source (ex: page.objects) - pertinent pour les chapitres
+        let itemContainerDiv = null; // Le conteneur DOM des items (ex: .chapter-objects ou #table-of-contents)
 
         if (!thisPageDiv || !currentPageData) {
-            console.warn(`[Page ${idx}] Données de page ou div de page manquante
-s.`);
+            console.warn(`[Page ${idx}] Données de page ou div de page manquantes.`);
             return;
         }
 
         if (isTocPage) {
             itemContainerDiv = thisPageDiv.querySelector('#table-of-contents');
             if (!itemContainerDiv) {
-                // Si la page TOC est vide (par ex. une toc_continued fraîchemen
-t créée), elle n'aura pas encore de #table-of-contents.
+                // Si la page TOC est vide (par ex. une toc_continued fraîchement créée), elle n'aura pas encore de #table-of-contents.
                 // C'est normal, la pagination ne trouvera rien à faire.
-                console.log(`[Page TOC ${idx}] Conteneur #table-of-contents non
-trouvé (peut être normal si vide).`);
-                // On ne quitte pas, car il se peut qu'on y déplace des items pl
-us tard.
+                console.log(`[Page TOC ${idx}] Conteneur #table-of-contents non trouvé (peut être normal si vide).`);
+                // On ne quitte pas, car il se peut qu'on y déplace des items plus tard.
             } else {
-                 itemsToPaginate = Array.from(itemContainerDiv.children).filter(
-child => child.tagName === 'LI');
+                 itemsToPaginate = Array.from(itemContainerDiv.children).filter(child => child.tagName === 'LI');
             }
-            console.log(`[Page TOC ${idx}] Mode pagination pour Sommaire. ${item
-sToPaginate.length} <li> trouvés.`);
-            // Pour le TOC, sourceDataArray n'est pas utilisé de la même manière
- (on déplace les noeuds LI directement)
+            console.log(`[Page TOC ${idx}] Mode pagination pour Sommaire. ${itemsToPaginate.length} <li> trouvés.`);
+            // Pour le TOC, sourceDataArray n'est pas utilisé de la même manière (on déplace les noeuds LI directement)
         } else if (currentPageData.type === 'chapter') {
             itemContainerDiv = thisPageDiv.querySelector('.chapter-objects');
             if (!itemContainerDiv) {
-                console.warn(`[Page Chapitre ${idx}] .chapter-objects manquant.`
-);
+                console.warn(`[Page Chapitre ${idx}] .chapter-objects manquant.`);
                 return;
             }
-            // Pour les chapitres, itemsToPaginate sont les éléments rendus, pas
- les drop-targets
+            // Pour les chapitres, itemsToPaginate sont les éléments rendus, pas les drop-targets
             itemsToPaginate = Array.from(itemContainerDiv.children)
-                                         .filter(child => child.offsetParent !==
- null && !child.classList.contains('drop-target'));
-            sourceDataArray = currentPageData.objects; // Le tableau d'objets de
- la page
-            if (sourceDataArray && sourceDataArray.length !== itemsToPaginate.le
-ngth) {
-                 console.warn(`[Page Chapitre ${idx}] Incohérence: ${sourceDataA
-rray.length} objets de données vs ${itemsToPaginate.length} éléments rendus.`);
+                                         .filter(child => child.offsetParent !== null && !child.classList.contains('drop-target'));
+            sourceDataArray = currentPageData.objects; // Le tableau d'objets de la page
+            if (sourceDataArray && sourceDataArray.length !== itemsToPaginate.length) {
+                 console.warn(`[Page Chapitre ${idx}] Incohérence: ${sourceDataArray.length} objets de données vs ${itemsToPaginate.length} éléments rendus.`);
             }
-            console.log(`[Page Chapitre ${idx}] Mode pagination pour Chapitre. $
-{itemsToPaginate.length} objets rendus trouvés.`);
+            console.log(`[Page Chapitre ${idx}] Mode pagination pour Chapitre. ${itemsToPaginate.length} objets rendus trouvés.`);
         } else {
-            console.log(`[Page ${idx}] Type de page "${currentPageData.type}" no
-n géré pour la pagination.`);
+            console.log(`[Page ${idx}] Type de page "${currentPageData.type}" non géré pour la pagination.`);
             return;
         }
 
         const contentDiv = thisPageDiv.querySelector('.content');
-        if (!contentDiv) { // contentDiv est nécessaire pour les calculs de haut
-eur
+        if (!contentDiv) { // contentDiv est nécessaire pour les calculs de hauteur
             console.warn(`[Page ${idx}] div.content manquant.`);
             return;
         }
-        // chapterObjsDiv n'est pertinent que pour les pages 'chapter', itemCont
-ainerDiv est maintenant plus générique.
+        // chapterObjsDiv n'est pertinent que pour les pages 'chapter', itemContainerDiv est maintenant plus générique.
         // const chapterObjsDiv = thisPageDiv.querySelector('.chapter-objects');
 
 
@@ -2026,20 +1739,13 @@ ainerDiv est maintenant plus générique.
         const paginationHeight = paginationDiv ? paginationDiv.offsetHeight : 0;
 
         const contentPaddingTop = parseFloat(contentStyle.paddingTop) || 0;
-        const contentPaddingBottom = parseFloat(contentStyle.paddingBottom) || 0
-;
+        const contentPaddingBottom = parseFloat(contentStyle.paddingBottom) || 0;
 
         const grossContentHeight = pageHeight - headerHeight;
-        // Marge de 10px pour la pagination (qui est en absolute) et 10px de séc
-urité en plus.
-        const availableHeightForChapterObjects = grossContentHeight - contentPad
-dingTop - contentPaddingBottom - paginationHeight - 20;
+        // Marge de 10px pour la pagination (qui est en absolute) et 10px de sécurité en plus.
+        const availableHeightForChapterObjects = grossContentHeight - contentPaddingTop - contentPaddingBottom - paginationHeight - 20;
 
-        console.log(`[Page ${idx}] PageH: ${pageHeight.toFixed(2)}, HeaderH: ${h
-eaderHeight.toFixed(2)}, ContentPadT: ${contentPaddingTop.toFixed(2)}, ContentPa
-dB: ${contentPaddingBottom.toFixed(2)}, PaginationH: ${paginationHeight.toFixed(
-2)}, AvailableHForChapterObjects: ${availableHeightForChapterObjects.toFixed(2)}
-`);
+        console.log(`[Page ${idx}] PageH: ${pageHeight.toFixed(2)}, HeaderH: ${headerHeight.toFixed(2)}, ContentPadT: ${contentPaddingTop.toFixed(2)}, ContentPadB: ${contentPaddingBottom.toFixed(2)}, PaginationH: ${paginationHeight.toFixed(2)}, AvailableHForChapterObjects: ${availableHeightForChapterObjects.toFixed(2)}`);
 
         let accumulatedHeight = 0;
         let splitAtIndex = -1;
@@ -2058,11 +1764,9 @@ dB: ${contentPaddingBottom.toFixed(2)}, PaginationH: ${paginationHeight.toFixed(
                     gap = parseFloat(gapProperty) || 0;
                 }
             }
-            const totalElementHeightWithMarginsAndGap = elementHeight + marginTo
-p + marginBottom + gap;
+            const totalElementHeightWithMarginsAndGap = elementHeight + marginTop + marginBottom + gap;
 
-            if (accumulatedHeight + totalElementHeightWithMarginsAndGap > availa
-bleHeightForChapterObjects) {
+            if (accumulatedHeight + totalElementHeightWithMarginsAndGap > availableHeightForChapterObjects) {
                 if (i === 0) {
                      if (itemsToPaginate.length > 1 || !isRecursiveCall) {
                         splitAtIndex = 0;
@@ -2077,26 +1781,20 @@ bleHeightForChapterObjects) {
             accumulatedHeight += totalElementHeightWithMarginsAndGap;
         }
 
-        console.log(`[Page ${idx}] Fin boucle. AccumulatedHeight: ${accumulatedH
-eight.toFixed(2)}, splitAtIndex: ${splitAtIndex}`);
+        console.log(`[Page ${idx}] Fin boucle. AccumulatedHeight: ${accumulatedHeight.toFixed(2)}, splitAtIndex: ${splitAtIndex}`);
 
         const itemCount = itemsToPaginate.length;
 
         if (splitAtIndex > -1 && splitAtIndex < itemCount) {
             if (currentPageData.type === 'chapter') {
                 if (!sourceDataArray) {
-                    console.error(`[Page Chapitre ${idx}] sourceDataArray est nu
-ll!`);
+                    console.error(`[Page Chapitre ${idx}] sourceDataArray est null!`);
                     return;
                 }
-                if (sourceDataArray.length === 1 && splitAtIndex === 0 && isRecu
-rsiveCall) {
-                    console.warn(`[Page Chapitre ${idx}] Tentative de déplacemen
-t du seul objet (appel récursif). Annulation pour éviter boucle.`);
-                } else if (sourceDataArray.length === 0 && itemsToPaginate.lengt
-h > 0 && splitAtIndex === 0){
-                     console.warn(`[Page Chapitre ${idx}] Incohérence: sourceDat
-aArray vide mais itemsToPaginate non. SplitAtIndex 0. Annulation.`);
+                if (sourceDataArray.length === 1 && splitAtIndex === 0 && isRecursiveCall) {
+                    console.warn(`[Page Chapitre ${idx}] Tentative de déplacement du seul objet (appel récursif). Annulation pour éviter boucle.`);
+                } else if (sourceDataArray.length === 0 && itemsToPaginate.length > 0 && splitAtIndex === 0){
+                     console.warn(`[Page Chapitre ${idx}] Incohérence: sourceDataArray vide mais itemsToPaginate non. SplitAtIndex 0. Annulation.`);
                 }
                 else {
                     let objectsToMove = sourceDataArray.slice(splitAtIndex);
@@ -2107,35 +1805,28 @@ aArray vide mais itemsToPaginate non. SplitAtIndex 0. Annulation.`);
                     let nextPageData = pages[nextPageIdx];
 
                     if (!nextPageData || nextPageData.type !== 'chapter') {
-                        console.log(`[Page Chapitre ${idx}] Création page (type
-chapter) après ${idx}.`);
-                        const newPageTemplate = { type: 'chapter', objects: [] }
-;
+                        console.log(`[Page Chapitre ${idx}] Création page (type chapter) après ${idx}.`);
+                        const newPageTemplate = { type: 'chapter', objects: [] };
                         pages.splice(nextPageIdx, 0, newPageTemplate);
                         orientation.splice(nextPageIdx, 0, orientation[idx]);
                         nextPageData = newPageTemplate;
                     }
 
-                    nextPageData.objects = objectsToMove.concat(nextPageData.obj
-ects || []);
-                    console.log(`[Page Chapitre ${idx}] ${objectsToMove.length}
-objets déplacés vers page ${nextPageIdx}.`);
+                    nextPageData.objects = objectsToMove.concat(nextPageData.objects || []);
+                    console.log(`[Page Chapitre ${idx}] ${objectsToMove.length} objets déplacés vers page ${nextPageIdx}.`);
 
                     updateAllChapterNumbers();
-                    console.log(`[Page Chapitre ${idx}] Pagination OK. Appel réc
-ursif pour page ${nextPageIdx}.`);
+                    console.log(`[Page Chapitre ${idx}] Pagination OK. Appel récursif pour page ${nextPageIdx}.`);
                     paginateObjects(nextPageIdx, true);
                 }
             }
         } else {
-             console.log(`[Page ${idx}] Aucune pagination nécessaire (splitAtInd
-ex: ${splitAtIndex}, itemCount: ${itemCount}).`);
+             console.log(`[Page ${idx}] Aucune pagination nécessaire (splitAtIndex: ${splitAtIndex}, itemCount: ${itemCount}).`);
         }
     }, 250);
 }
 
 // La fonction paginatePage est un alias.
 function paginatePage(idx) {
-    paginateObjects(idx, false); // false indique que ce n'est pas un appel récu
-rsif interne.
+    paginateObjects(idx, false); // false indique que ce n'est pas un appel récursif interne.
 }
