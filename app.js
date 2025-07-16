@@ -649,6 +649,7 @@ function renderPage(page, idx) {
                 el = document.createElement('div');
                 el.className = "table-container";
                 let containerWidth = orientation[idx] === "portrait" ? 710 : 1038;
+				
                 let table = document.createElement('table');
                 table.className = "page-table";
                 table.classList.add('draggable-on-shift');
@@ -668,7 +669,7 @@ function renderPage(page, idx) {
 					e.dataTransfer.effectAllowed = "move";
 					e.dataTransfer.setData('move-obj-oid', oid + "");
 					e.dataTransfer.setData('move-obj-page', idx + "");
-					e.stopPropagation();
+					//e.stopPropagation();
 					el.classList.add('dragging');
 				});
 
@@ -679,6 +680,7 @@ function renderPage(page, idx) {
                 table.style.width = containerWidth + "px";
                 table.style.maxWidth = containerWidth + "px";
                 table.style.tableLayout = "fixed";
+				
                 let firstRow = obj.rows.find(r => r && r.length);
                 let nbCols = firstRow ? firstRow.length : 2;
                 if (!obj.colWidths || obj.colWidths.length !== nbCols) {
@@ -741,6 +743,7 @@ function renderPage(page, idx) {
                         tr.style.backgroundColor = "#f5f5f5";
                         tr.style.fontWeight = "bold";
                     }
+					
                     for (let j = 0; j < (row ? row.length : 0); j++) {
                         let cellData = row[j];
                         if (cellData === null)
@@ -750,6 +753,31 @@ function renderPage(page, idx) {
                         td.style.verticalAlign = "middle";
                         td.style.overflow = "hidden";
                         td.style.position = "relative";
+                        td.classList.add('draggable-on-shift');
+                        td.setAttribute('draggable', 'true');
+
+                        td.addEventListener('mousedown', function (e) {
+                            if (e.shiftKey) {
+                                e.preventDefault();
+                            }
+                        }, true);
+
+                        td.addEventListener('dragstart', function(e){
+                            if (!e.shiftKey) {
+                                e.preventDefault();
+                                return;
+                            }
+                            e.dataTransfer.effectAllowed = "move";
+                            e.dataTransfer.setData('move-obj-oid', oid + "");
+                            e.dataTransfer.setData('move-obj-page', idx + "");
+                            e.stopPropagation();
+                            el.classList.add('dragging');
+                        });
+
+                        td.addEventListener('dragend', function () {
+                            el.classList.remove('dragging');
+                        });
+						
                         td.addEventListener('focus', () => {
                             const range = document.createRange();
                             range.selectNodeContents(td);
