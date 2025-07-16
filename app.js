@@ -1076,8 +1076,13 @@ function setFontSize(sz) {
     if (!selection.rangeCount) return;
 
     const range = selection.getRangeAt(0);
+    // S'assure que querySelectorAll est appelé sur un élément
+    let container = range.commonAncestorContainer;
+    if (container.nodeType !== Node.ELEMENT_NODE) {
+        container = container.parentElement;
+    }
     // Récupère tous les <font size="7"> dans le conteneur commun
-    const fonts = range.commonAncestorContainer.querySelectorAll('font[size="7"]');
+    const fonts = container.querySelectorAll('font[size="7"]');
 
     fonts.forEach(font => {
         // S'assure que le nœud est bien dans la sélection (même partiellement)
