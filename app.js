@@ -74,6 +74,12 @@ function migrateIconPlaceholders() {
     });
 }
 
+function flushPendingEdits() {
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.dispatchEvent(new Event('blur'));
+    });
+}
+
 function normalizeColWidths(tableObj) {
     if (!tableObj.colWidths || tableObj.colWidths.length === 0) return;
 
@@ -105,6 +111,7 @@ function normalizeColWidths(tableObj) {
 function saveToLocalStorage() {
     if (autosaveDisabled) return;
     try {
+        flushPendingEdits();
         const data = JSON.stringify({ pages, orientation });
         if (data.length >= MAX_LOCAL_STORAGE_SIZE * 0.95) {
             alert("Le document est trop volumineux pour être sauvegardé automatiquement. Les images nombreuses peuvent poser problème.");
@@ -1338,10 +1345,7 @@ function toggleOrientation(idx = null) {
 
 /* ------- Sauvegarder / Charger JSON ------- */
 function saveJSON() {
-    // Force all editable areas to commit their content by triggering blur
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-        el.dispatchEvent(new Event('blur'));
-    });
+    flushPendingEdits();
     const data = JSON.stringify({ pages, orientation });
     let a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], {type: "application/json"}));
