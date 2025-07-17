@@ -16,6 +16,63 @@ function generateUniqueId() {
     return 'obj-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 }
 
+const ICON_PLACEHOLDER_PREFIX = "icon-idx-";
+
+function iconUrlsToPlaceholders(html) {
+    if (!html || typeof IconData === "undefined") return html || "";
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    tmp.querySelectorAll('img').forEach(img => {
+        const src = img.getAttribute('src') || '';
+        let idx = img.getAttribute('data-icon-index');
+        if (idx === null || idx === '') {
+            idx = IconData.findIndex(ic => ic.url === src);
+        }
+        idx = parseInt(idx, 10);
+        if (!isNaN(idx) && IconData[idx]) {
+            img.setAttribute('data-icon-index', idx);
+            img.setAttribute('src', ICON_PLACEHOLDER_PREFIX + idx);
+        }
+    });
+    return tmp.innerHTML;
+}
+
+function placeholdersToIconUrls(html) {
+    if (!html || typeof IconData === "undefined") return html || "";
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    tmp.querySelectorAll('img[data-icon-index]').forEach(img => {
+        const idx = parseInt(img.getAttribute('data-icon-index'), 10);
+        if (!isNaN(idx) && IconData[idx]) {
+            img.setAttribute('src', IconData[idx].url);
+        }
+    });
+    return tmp.innerHTML;
+}
+
+function migrateIconPlaceholders() {
+    if (typeof IconData === "undefined") return;
+    pages.forEach(page => {
+        if (Array.isArray(page.objects)) {
+            page.objects.forEach(obj => {
+                if (obj.type === 'text' && obj.html) {
+                    obj.html = iconUrlsToPlaceholders(obj.html);
+                } else if (obj.type === 'table' && Array.isArray(obj.rows)) {
+                    obj.rows.forEach((row, ri) => {
+                        row.forEach((cell, ci) => {
+                            if (cell && typeof cell === 'object' && cell.text) {
+                                cell.text = iconUrlsToPlaceholders(cell.text);
+                            } else if (typeof cell === 'string') {
+                                row[ci] = iconUrlsToPlaceholders(cell);
+                            }
+                        });
+                    });
+                }
+            });
+        }
+    });
+}
+
 function normalizeColWidths(tableObj) {
     if (!tableObj.colWidths || tableObj.colWidths.length === 0) return;
 
@@ -66,6 +123,7 @@ function loadFromLocalStorage() {
         const parsed = JSON.parse(data);
         pages = parsed.pages || [];
         orientation = parsed.orientation || [];
+        migrateIconPlaceholders();
         selectedPage = 0;
         selectedElement = null;
         updateAllChapterNumbers();
@@ -605,12 +663,40 @@ function renderPage(page, idx) {
                 el = document.createElement('div');
                 el.contentEditable = "true";
                 el.className = "rte-area";
-                el.innerHTML = obj.html || "";
+                el.innerHTML = placeholdersToIconUrls(obj.html || "");
 
                 const insertImageIntoRTE = (targetDiv, imageSrc) => {
                     const img = document.createElement('img');
-					img.draggable = false; // 16 07 2025 14:09 Test pour ne pas rendre les images draggable, à voir si à conserver
+                    img.draggable = false;
                     img.src = imageSrc;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '300px';
+                    img.style.display = 'block';
+                    img.style.margin = '10px 0';
+                    img.style.objectFit = "contain";
+
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0 && selection.anchorNode && targetDiv.contains(selection.anchorNode)) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(img);
+                        const newRange = document.createRange();
+                        newRange.setStartAfter(img);
+                        newRange.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(newRange);
+                    } else {
+                        targetDiv.appendChild(img);
+                    }
+                    paginatePage(idx);
+                };
+
+                const insertIconIntoRTE = (targetDiv, iconIndex) => {
+                    if (typeof IconData === "undefined" || !IconData[iconIndex]) return;
+                    const img = document.createElement('img');
+                    img.draggable = false;
+                    img.src = IconData[iconIndex].url;
+                    img.setAttribute('data-icon-index', iconIndex);
                     img.style.maxWidth = '100%';
                     img.style.maxHeight = '300px';
                     img.style.display = 'block';
@@ -666,9 +752,7 @@ function renderPage(page, idx) {
 
                     if (dataType === "icon") {
                         const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
-                        if (typeof IconData !== "undefined" && IconData[iconIndex]) {
-                            insertImageIntoRTE(el, IconData[iconIndex].url);
-                        }
+                        insertIconIntoRTE(el, iconIndex);
                     } else if (e.dataTransfer.files.length > 0) {
                         const file = e.dataTransfer.files[0];
                         if (file.type.startsWith("image/")) {
@@ -687,7 +771,7 @@ function renderPage(page, idx) {
                 });
 
                 el.addEventListener('blur', function () {
-                    obj.html = el.innerHTML;
+                    obj.html = iconUrlsToPlaceholders(el.innerHTML);
                     paginatePage(idx);
                 });
             } else if (obj.type === "table") {
@@ -784,6 +868,31 @@ function renderPage(page, idx) {
                     paginatePage(idx);
                 };
 
+                const insertIconIntoCell = (targetCell, iconIndex) => {
+                    if (typeof IconData === "undefined" || !IconData[iconIndex]) return;
+                    const img = document.createElement('img');
+                    img.src = IconData[iconIndex].url;
+                    img.setAttribute('data-icon-index', iconIndex);
+                    img.style.maxWidth = "100%";
+                    img.style.maxHeight = "800px";
+                    img.style.objectFit = "contain";
+                    img.style.verticalAlign = "middle";
+
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0 && selection.anchorNode && targetCell.contains(selection.anchorNode)) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(img);
+                        range.setStartAfter(img);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } else {
+                        targetCell.appendChild(img);
+                    }
+                    paginatePage(idx);
+                };
+
                 obj.rows.forEach((row, i) => {
                     let tr = document.createElement('tr');
                     if (i === 0 && obj.headerShaded) {
@@ -837,7 +946,7 @@ function renderPage(page, idx) {
                         if (typeof cellData === "object" && cellData.image) {
                             td.innerHTML = `<img src="${cellData.image}" style="max-width:100%;  object-fit:contain; vertical-align:middle;">`;
                         } else {
-                            td.innerHTML = (typeof cellData === "object" ? cellData.text : cellData) || "";
+                            td.innerHTML = placeholdersToIconUrls((typeof cellData === "object" ? cellData.text : cellData) || "");
                         }
 
                         let colspan = (typeof cellData === "object" && cellData.colspan) ? cellData.colspan : 1;
@@ -847,10 +956,10 @@ function renderPage(page, idx) {
 
                         td.addEventListener('blur', () => {
                             if (typeof cellData === "object" && cellData !== null) {
-                                cellData.text = td.innerHTML;
+                                cellData.text = iconUrlsToPlaceholders(td.innerHTML);
                                 delete cellData.image;
                             } else {
-                                obj.rows[i][j] = td.innerHTML;
+                                obj.rows[i][j] = iconUrlsToPlaceholders(td.innerHTML);
                             }
                             paginatePage(idx);
                         });
@@ -878,9 +987,7 @@ function renderPage(page, idx) {
 
                             if (dataType === "icon") {
                                 const iconIndex = parseInt(e.dataTransfer.getData("icon"), 10);
-                                if (typeof IconData !== "undefined" && IconData[iconIndex]) {
-                                    insertImageIntoCell(td, IconData[iconIndex].url);
-                                }
+                                insertIconIntoCell(td, iconIndex);
                             } else if (e.dataTransfer.files.length > 0) {
                                 const file = e.dataTransfer.files[0];
                                 if (file.type.startsWith("image/")) {
@@ -1252,6 +1359,7 @@ function openJSONFile(input) {
             let data = JSON.parse(evt.target.result);
             pages = data.pages || [];
             orientation = data.orientation || [];
+            migrateIconPlaceholders();
             pages.forEach(p => {
                 if (Array.isArray(p.objects)) {
                     p.objects.forEach(obj => {
