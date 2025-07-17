@@ -1201,7 +1201,8 @@ function updateAllChapterNumbers() {
             }
         } while (tocPaginationOccurred && currentPageIndexForToc < pages.length);
     }
-    saveToLocalStorage();
+    	// Saving is handled elsewhere (timer or explicit save actions)
+	// saveToLocalStorage();
 }
 
 function updateSelectionClass() {
