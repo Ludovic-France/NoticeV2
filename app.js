@@ -7,9 +7,7 @@ let orientation = []; // Pour chaque page
 const INDEX_REV = "ENR-063-04"; // Valeur fixe par défaut
 const NUM_REF = "900000"; // Modifiable uniquement page 1
 // NOUVEAU: Retrait de COLOR_DROP qui n'est plus nécessaire pour les drop-targets
-const LOCAL_STORAGE_KEY = "notice_v2_autosave";
-const MAX_LOCAL_STORAGE_SIZE = 5 * 1024 * 1024; // ~5MB
-let autosaveDisabled = false;
+
 
 // Fonction pour générer des ID uniques pour les nouveaux objets
 function generateUniqueId() {
@@ -116,59 +114,10 @@ function normalizeColWidths(tableObj) {
     }
 }
 
-/*function saveToLocalStorage() {
-    if (autosaveDisabled) return;
-    try {
-        flushPendingEdits();
-        const data = JSON.stringify({ pages, orientation });
-        if (data.length >= MAX_LOCAL_STORAGE_SIZE * 0.95) {
-            alert("Le document est trop volumineux pour être sauvegardé automatiquement. Les images nombreuses peuvent poser problème.");
-            autosaveDisabled = true;
-            return;
-        }
-        localStorage.setItem(LOCAL_STORAGE_KEY, data);
-    } catch (e) {
-        console.error('Erreur lors de la sauvegarde locale', e);
-    }
-}*/
-/*
-function loadFromLocalStorage() {
-    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (!data) return false;
-    try {
-        const parsed = JSON.parse(data);
-        pages = parsed.pages || [];
-        orientation = parsed.orientation || [];
-        migrateIconPlaceholders();
-        selectedPage = 0;
-        selectedElement = null;
-        updateAllChapterNumbers();
-        paginateAllPages();
-        return true;
-    } catch (e) {
-        console.error('Erreur lors du chargement local', e);
-        return false;
-    }
-}*/
-/*
-function startAutoSave() {
-    setInterval(saveToLocalStorage, 30000);
-    window.addEventListener('beforeunload', saveToLocalStorage);
-}
-*/
 // ---- Initialisation principale au chargement ----
 window.onload = () => {
     initIcons();
-    //const loaded = loadFromLocalStorage();
-    //if (!loaded) {
-        initDocument();
-        updateAllChapterNumbers();
-    //}
-    //startAutoSave();
     setupDragNDrop();
-    //if (loaded) {
-        // loadFromLocalStorage already handled numbering
-    //}
 
     // Gestion globale de la touche Shift pour le curseur et le drag&drop
     document.addEventListener('keydown', e => {
@@ -481,7 +430,6 @@ function renderPage(page, idx) {
         let numDiv = revBox.querySelector('.num');
         numDiv.addEventListener('blur', function () {
             pages[0].editableNum = numDiv.innerText;
-            //saveToLocalStorage();
         });
     }
     header.appendChild(revBox);
@@ -498,7 +446,6 @@ function renderPage(page, idx) {
         title.innerText = page.title || "Notice : Untel";
         title.addEventListener('blur', function () {
             page.title = title.innerText;
-            //saveToLocalStorage();
         });
         title.onclick = function (e) {
             selectedElement = {
@@ -533,7 +480,6 @@ function renderPage(page, idx) {
                 reader.onload = evt => {
                     page.img = evt.target.result;
                     renderDocument();
-                    //saveToLocalStorage();
                 };
                 reader.readAsDataURL(file);
             }
@@ -553,7 +499,6 @@ function renderPage(page, idx) {
                         img.style.maxHeight = '100%';
                         imgDrop.appendChild(img);
                         page.img = reader.result;
-                        //saveToLocalStorage();
                     };
                     reader.readAsDataURL(file);
                     return;
@@ -573,7 +518,6 @@ function renderPage(page, idx) {
                         img.style.maxHeight = '100%';
                         imgDrop.appendChild(img);
                         page.img = reader.result;
-						//saveToLocalStorage();
                     };
                     reader.readAsDataURL(blob);
                 })
@@ -711,7 +655,6 @@ function renderPage(page, idx) {
                         targetDiv.appendChild(img);
                     }
                     paginatePage(idx);
-					//saveToLocalStorage();
                 };
 
                 const insertIconIntoRTE = (targetDiv, iconIndex) => {
@@ -740,7 +683,6 @@ function renderPage(page, idx) {
                         targetDiv.appendChild(img);
                     }
                     paginatePage(idx);
-					//saveToLocalStorage();
                 };
 
                 el.addEventListener('paste', e => {
@@ -797,7 +739,6 @@ function renderPage(page, idx) {
                 el.addEventListener('blur', function () {
                     obj.html = iconUrlsToPlaceholders(el.innerHTML);
                     paginatePage(idx);
-					//saveToLocalStorage();
                 });
             } else if (obj.type === "table") {
                 if (obj.headerShaded === undefined)
@@ -891,7 +832,6 @@ function renderPage(page, idx) {
                         targetCell.appendChild(img);
                     }
                     paginatePage(idx);
-					//saveToLocalStorage();
                 };
 
                 const insertIconIntoCell = (targetCell, iconIndex) => {
@@ -988,7 +928,6 @@ function renderPage(page, idx) {
                                 obj.rows[i][j] = iconUrlsToPlaceholders(td.innerHTML);
                             }
                             paginatePage(idx);
-							//saveToLocalStorage();
                         });
 
                         td.addEventListener('paste', e => {
@@ -1210,8 +1149,6 @@ function updateAllChapterNumbers() {
             }
         } while (tocPaginationOccurred && currentPageIndexForToc < pages.length);
     }
-	// Saving is handled elsewhere (timer or explicit save actions)
-    //saveToLocalStorage();
 }
 
 function updateSelectionClass() {
@@ -1316,7 +1253,6 @@ function addPage() {
     selectedPage = selectedPage + 1;
     renderDocument();
     updateSelectionClass();
-    //saveToLocalStorage();
 }
 
 function deletePage() {
@@ -1341,7 +1277,6 @@ function deletePage() {
 
         selectedElement = null;
         updateAllChapterNumbers();
-        //saveToLocalStorage();
 
         if (debug) console.log("Page " + (selectedPage + 1) + " a été supprimée.");
 
@@ -1360,7 +1295,6 @@ function toggleOrientation(idx = null) {
     orientation[idx] = (orientation[idx] === "portrait" ? "landscape" : "portrait");
     renderDocument();
     paginatePage(idx);
-    //saveToLocalStorage();
 }
 
 /* ------- Sauvegarder / Charger JSON ------- */
@@ -1372,7 +1306,6 @@ function saveJSON() {
     a.download = "notice.json";
     a.click();
     URL.revokeObjectURL(a.href);
-    //saveToLocalStorage();
 }
 
 function openJSONFile(input) {
@@ -1401,7 +1334,6 @@ function openJSONFile(input) {
             selectedElement = null;
             updateAllChapterNumbers();
             paginateAllPages();
-			//saveToLocalStorage();
         } catch (e) {
             console.error("Error parsing JSON file:", e);
             alert("Erreur lors de l'ouverture du fichier JSON.");
