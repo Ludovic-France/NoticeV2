@@ -7,7 +7,6 @@ let orientation = []; // Pour chaque page
 const INDEX_REV = "ENR-063-04"; // Valeur fixe par défaut
 const NUM_REF = "900000"; // Modifiable uniquement page 1
 // NOUVEAU: Retrait de COLOR_DROP qui n'est plus nécessaire pour les drop-targets
-let isResizingCol = false;
 const LOCAL_STORAGE_KEY = "notice_v2_autosave";
 const MAX_LOCAL_STORAGE_SIZE = 5 * 1024 * 1024; // ~5MB
 let autosaveDisabled = false;
