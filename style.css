@@ -248,6 +248,11 @@ aside#controls button {
 aside#controls button:hover {
     background: #24344f;
 }
+#autosave-warning {
+    color: #a00;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
 .page .selected {
   box-shadow: 0 0 0 4px #2e6fd8, 0 2px 20px #0003;
 }
@@ -290,10 +295,10 @@ body.shift-key-down .draggable-wrapper:active {
 
 body.shift-key-down .draggable-on-shift {
     cursor: grab; /* Uniquement quand Shift est pressé */
+	user-select: none; /* Évite la sélection de texte pendant le déplacement */
 }
 body.shift-key-down .draggable-on-shift:active {
     cursor: grabbing; /* Pendant le clic+drag */
-    user-select: none; /* Évite la sélection de texte pendant le déplacement */
 }
 
 .chapter-objects .dragging {
