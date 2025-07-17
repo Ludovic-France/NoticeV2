@@ -1,4 +1,5 @@
 /* ----------- Données et variables globales ----------- */
+const debug = 0;
 let selectedPage = 0;
 let pages = []; // Contient les pages de la notice
 let selectedElement = null; // Élément sélectionné
@@ -1315,10 +1316,10 @@ function deletePage() {
         updateAllChapterNumbers();
         saveToLocalStorage();
 
-        console.log("Page " + (selectedPage + 1) + " a été supprimée.");
+        if (debug) console.log("Page " + (selectedPage + 1) + " a été supprimée.");
 
     } else {
-        console.log("Suppression de la page annulée par l'utilisateur.");
+        if (debug) console.log("Suppression de la page annulée par l'utilisateur.");
     }
 }
 
@@ -1959,7 +1960,7 @@ function paginateObjects(idx, isRecursiveCall = false) {
     // On exclut la page de garde (idx === 0) et les index hors limites.
     // La page du Sommaire (idx === 1) sera maintenant traitée.
     if (idx === 0 || idx >= pages.length) {
-        if (!isRecursiveCall) console.log(`paginateObjects: Page ${idx} non éligible pour pagination (couverture ou hors limites).`);
+        if (debug) {if (!isRecursiveCall) console.log(`paginateObjects: Page ${idx} non éligible pour pagination (couverture ou hors limites).`);}
         return;
     }
 
@@ -1989,12 +1990,12 @@ function paginateObjects(idx, isRecursiveCall = false) {
             if (!itemContainerDiv) {
                 // Si la page TOC est vide (par ex. une toc_continued fraîchement créée), elle n'aura pas encore de #table-of-contents.
                 // C'est normal, la pagination ne trouvera rien à faire.
-                console.log(`[Page TOC ${idx}] Conteneur #table-of-contents non trouvé (peut être normal si vide).`);
+                if (debug) console.log(`[Page TOC ${idx}] Conteneur #table-of-contents non trouvé (peut être normal si vide).`);
                 // On ne quitte pas, car il se peut qu'on y déplace des items plus tard.
             } else {
                  itemsToPaginate = Array.from(itemContainerDiv.children).filter(child => child.tagName === 'LI');
             }
-            console.log(`[Page TOC ${idx}] Mode pagination pour Sommaire. ${itemsToPaginate.length} <li> trouvés.`);
+            if (debug) console.log(`[Page TOC ${idx}] Mode pagination pour Sommaire. ${itemsToPaginate.length} <li> trouvés.`);
             // Pour le TOC, sourceDataArray n'est pas utilisé de la même manière (on déplace les noeuds LI directement)
         } else if (currentPageData.type === 'chapter') {
             itemContainerDiv = thisPageDiv.querySelector('.chapter-objects');
@@ -2009,9 +2010,9 @@ function paginateObjects(idx, isRecursiveCall = false) {
             if (sourceDataArray && sourceDataArray.length !== itemsToPaginate.length) {
                  console.warn(`[Page Chapitre ${idx}] Incohérence: ${sourceDataArray.length} objets de données vs ${itemsToPaginate.length} éléments rendus.`);
             }
-            console.log(`[Page Chapitre ${idx}] Mode pagination pour Chapitre. ${itemsToPaginate.length} objets rendus trouvés.`);
+            if (debug) console.log(`[Page Chapitre ${idx}] Mode pagination pour Chapitre. ${itemsToPaginate.length} objets rendus trouvés.`);
         } else {
-            console.log(`[Page ${idx}] Type de page "${currentPageData.type}" non géré pour la pagination.`);
+            if (debug) console.log(`[Page ${idx}] Type de page "${currentPageData.type}" non géré pour la pagination.`);
             return;
         }
 
@@ -2040,7 +2041,7 @@ function paginateObjects(idx, isRecursiveCall = false) {
         // Marge de 10px pour la pagination (qui est en absolute) et 10px de sécurité en plus.
         const availableHeightForChapterObjects = grossContentHeight - contentPaddingTop - contentPaddingBottom - paginationHeight - 20;
 
-        console.log(`[Page ${idx}] PageH: ${pageHeight.toFixed(2)}, HeaderH: ${headerHeight.toFixed(2)}, ContentPadT: ${contentPaddingTop.toFixed(2)}, ContentPadB: ${contentPaddingBottom.toFixed(2)}, PaginationH: ${paginationHeight.toFixed(2)}, AvailableHForChapterObjects: ${availableHeightForChapterObjects.toFixed(2)}`);
+        if (debug) console.log(`[Page ${idx}] PageH: ${pageHeight.toFixed(2)}, HeaderH: ${headerHeight.toFixed(2)}, ContentPadT: ${contentPaddingTop.toFixed(2)}, ContentPadB: ${contentPaddingBottom.toFixed(2)}, PaginationH: ${paginationHeight.toFixed(2)}, AvailableHForChapterObjects: ${availableHeightForChapterObjects.toFixed(2)}`);
 
         let accumulatedHeight = 0;
         let splitAtIndex = -1;
@@ -2076,7 +2077,7 @@ function paginateObjects(idx, isRecursiveCall = false) {
             accumulatedHeight += totalElementHeightWithMarginsAndGap;
         }
 
-        console.log(`[Page ${idx}] Fin boucle. AccumulatedHeight: ${accumulatedHeight.toFixed(2)}, splitAtIndex: ${splitAtIndex}`);
+        if (debug) console.log(`[Page ${idx}] Fin boucle. AccumulatedHeight: ${accumulatedHeight.toFixed(2)}, splitAtIndex: ${splitAtIndex}`);
 
         const itemCount = itemsToPaginate.length;
 
@@ -2100,7 +2101,7 @@ function paginateObjects(idx, isRecursiveCall = false) {
                     let nextPageData = pages[nextPageIdx];
 
                     if (!nextPageData || nextPageData.type !== 'chapter') {
-                        console.log(`[Page Chapitre ${idx}] Création page (type chapter) après ${idx}.`);
+                        if (debug) console.log(`[Page Chapitre ${idx}] Création page (type chapter) après ${idx}.`);
                         const newPageTemplate = { type: 'chapter', objects: [] };
                         pages.splice(nextPageIdx, 0, newPageTemplate);
                         orientation.splice(nextPageIdx, 0, orientation[idx]);
@@ -2108,15 +2109,15 @@ function paginateObjects(idx, isRecursiveCall = false) {
                     }
 
                     nextPageData.objects = objectsToMove.concat(nextPageData.objects || []);
-                    console.log(`[Page Chapitre ${idx}] ${objectsToMove.length} objets déplacés vers page ${nextPageIdx}.`);
+                    if (debug) console.log(`[Page Chapitre ${idx}] ${objectsToMove.length} objets déplacés vers page ${nextPageIdx}.`);
 
                     updateAllChapterNumbers();
-                    console.log(`[Page Chapitre ${idx}] Pagination OK. Appel récursif pour page ${nextPageIdx}.`);
+                    if (debug) console.log(`[Page Chapitre ${idx}] Pagination OK. Appel récursif pour page ${nextPageIdx}.`);
                     paginateObjects(nextPageIdx, true);
                 }
             }
         } else {
-             console.log(`[Page ${idx}] Aucune pagination nécessaire (splitAtIndex: ${splitAtIndex}, itemCount: ${itemCount}).`);
+             if (debug) console.log(`[Page ${idx}] Aucune pagination nécessaire (splitAtIndex: ${splitAtIndex}, itemCount: ${itemCount}).`);
         }
     }, 250);
 }
