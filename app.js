@@ -7,6 +7,7 @@ const INDEX_REV = "ENR-063-04"; // Valeur fixe par défaut
 const NUM_REF = "900000"; // Modifiable uniquement page 1
 // NOUVEAU: Retrait de COLOR_DROP qui n'est plus nécessaire pour les drop-targets
 let isResizingCol = false;
+const LOCAL_STORAGE_KEY = "notice_v2_autosave";
 
 // Fonction pour générer des ID uniques pour les nouveaux objets
 function generateUniqueId() {
@@ -41,13 +42,51 @@ function normalizeColWidths(tableObj) {
     }
 }
 
+function saveToLocalStorage() {
+    try {
+        const data = JSON.stringify({ pages, orientation });
+        localStorage.setItem(LOCAL_STORAGE_KEY, data);
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde locale', e);
+    }
+}
+
+function loadFromLocalStorage() {
+    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!data) return false;
+    try {
+        const parsed = JSON.parse(data);
+        pages = parsed.pages || [];
+        orientation = parsed.orientation || [];
+        selectedPage = 0;
+        selectedElement = null;
+        updateAllChapterNumbers();
+        paginateAllPages();
+        return true;
+    } catch (e) {
+        console.error('Erreur lors du chargement local', e);
+        return false;
+    }
+}
+
+function startAutoSave() {
+    setInterval(saveToLocalStorage, 30000);
+    window.addEventListener('beforeunload', saveToLocalStorage);
+}
+
 // ---- Initialisation principale au chargement ----
 window.onload = () => {
     initIcons();
-    initDocument();
+    const loaded = loadFromLocalStorage();
+    if (!loaded) {
+        initDocument();
+        updateAllChapterNumbers();
+    }
+    startAutoSave();
     setupDragNDrop();
-    // Initial calculation of chapter numbers and TOC
-    updateAllChapterNumbers();
+    if (loaded) {
+        // loadFromLocalStorage already handled numbering
+    }
 
     // Gestion globale de la touche Shift pour le curseur et le drag&drop
     document.addEventListener('keydown', e => {
@@ -1029,6 +1068,7 @@ function updateAllChapterNumbers() {
             }
         } while (tocPaginationOccurred && currentPageIndexForToc < pages.length);
     }
+    saveToLocalStorage();
 }
 
 function updateSelectionClass() {
@@ -1133,6 +1173,7 @@ function addPage() {
     selectedPage = selectedPage + 1;
     renderDocument();
     updateSelectionClass();
+    saveToLocalStorage();
 }
 
 function deletePage() {
@@ -1157,6 +1198,7 @@ function deletePage() {
 
         selectedElement = null;
         updateAllChapterNumbers();
+        saveToLocalStorage();
 
         console.log("Page " + (selectedPage + 1) + " a été supprimée.");
 
@@ -1175,6 +1217,7 @@ function toggleOrientation(idx = null) {
     orientation[idx] = (orientation[idx] === "portrait" ? "landscape" : "portrait");
     renderDocument();
     paginatePage(idx);
+    saveToLocalStorage();
 }
 
 /* ------- Sauvegarder / Charger JSON ------- */
@@ -1189,6 +1232,7 @@ function saveJSON() {
     a.download = "notice.json";
     a.click();
     URL.revokeObjectURL(a.href);
+    saveToLocalStorage();
 }
 
 function openJSONFile(input) {
@@ -1216,6 +1260,7 @@ function openJSONFile(input) {
             selectedElement = null;
             updateAllChapterNumbers();
             paginateAllPages();
+			saveToLocalStorage();
         } catch (e) {
             console.error("Error parsing JSON file:", e);
             alert("Erreur lors de l'ouverture du fichier JSON.");
