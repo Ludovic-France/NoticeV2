@@ -107,7 +107,7 @@ function normalizeColWidths(tableObj) {
     }
 }
 
-function saveToLocalStorage() {
+/*function saveToLocalStorage() {
     if (autosaveDisabled) return;
     try {
         flushPendingEdits();
@@ -121,8 +121,8 @@ function saveToLocalStorage() {
     } catch (e) {
         console.error('Erreur lors de la sauvegarde locale', e);
     }
-}
-
+}*/
+/*
 function loadFromLocalStorage() {
     const data = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (!data) return false;
@@ -140,26 +140,26 @@ function loadFromLocalStorage() {
         console.error('Erreur lors du chargement local', e);
         return false;
     }
-}
-
+}*/
+/*
 function startAutoSave() {
     setInterval(saveToLocalStorage, 30000);
     window.addEventListener('beforeunload', saveToLocalStorage);
 }
-
+*/
 // ---- Initialisation principale au chargement ----
 window.onload = () => {
     initIcons();
-    const loaded = loadFromLocalStorage();
-    if (!loaded) {
+    //const loaded = loadFromLocalStorage();
+    //if (!loaded) {
         initDocument();
         updateAllChapterNumbers();
-    }
-    startAutoSave();
+    //}
+    //startAutoSave();
     setupDragNDrop();
-    if (loaded) {
+    //if (loaded) {
         // loadFromLocalStorage already handled numbering
-    }
+    //}
 
     // Gestion globale de la touche Shift pour le curseur et le drag&drop
     document.addEventListener('keydown', e => {
@@ -1439,7 +1439,8 @@ function paginateToc(tocPageIndex) {
     const contentPaddingBottom = parseFloat(contentStyle.paddingBottom) || 0;
     const tocTitleElement = contentDiv.querySelector('h2');
     const tocTitleHeight = tocTitleElement ? tocTitleElement.offsetHeight + (parseFloat(getComputedStyle(tocTitleElement).marginBottom) || 0) : 0;
-    const availableHeightForOl = pageHeight - headerHeight - contentPaddingTop - contentPaddingBottom - paginationHeight - tocTitleHeight - 20;
+    const columnCount = parseInt(getComputedStyle(tocOlElement).columnCount) || 1;
+    const availableHeightForOl = (pageHeight - headerHeight - contentPaddingTop - contentPaddingBottom - paginationHeight - tocTitleHeight - 20) * columnCount;
 
     let accumulatedHeight = 0;
     let splitAtLiIndex = -1;
