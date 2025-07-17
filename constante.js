@@ -46,6 +46,3 @@ const UV = {
 const ALL_RISKS = [Laser, Fumee, Poussiere, IR, UV];
 // Rendre ALL_RISKS accessible globalement si besoin, ou le passer en argument.
 // Pour l'instant, on suppose qu'il sera accessible globalement car constante.js est chargé globalement.
-
-// Optionnel: Mettre un message pour vérifier que le fichier est chargé
-console.log("constante.js chargé.");
