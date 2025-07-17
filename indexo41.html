@@ -36,7 +36,7 @@
                     <button style="color:yellow; background:#333" onclick="setColor('yellow')">A</button>
                 </div>
                 <select onchange="setFontSize(this.value)">
-                    <option value="">Taille</option>
+                    <option value="7pt">Taille</option>
                     <option value="8pt">8pt</option>
                     <option value="9pt">9pt</option>
                     <option value="10pt">10pt</option>
@@ -98,12 +98,13 @@
             <button onclick="document.getElementById('openJSON').click()" title="Ouvrir un projet">📂</button>
 			<button onclick="exportCleanHTML()" title="Exporter HTML (pour Word)">📄</button> 
         
-		<ul style="font-size:0.8rem; color:#666; margin-top:auto; list-style:none; padding-left:1em;">
-			<li>Raccourcis clavier</li>
-			<li>Ctl+Shift+V colle le contenu sans mise en forme</li>
-			<li style="color:blue;">Ctl+B pour <b>gras</b>, Ctl+U pour <u>souligner</u>, Ctl+I pour <i>italique</i></li>
-			<li >Ctl+P pour imprimer (pdf ou papier). En fonction de l'imprimante, réduire l'échelle.</li>
-		</ul>
+			<ul style="font-size:0.8rem; color:#666; margin-top:auto; list-style:none; padding-left:1em;">
+				<li>Raccourcis clavier</li>
+				<li>Ctl+Shift+V colle le contenu sans mise en forme</li>
+				<li style="color:blue;">Ctl+B pour <b>gras</b>, Ctl+U pour <u>souligner</u>, Ctl+I pour <i>italique</i></li>
+				<li >Ctl+P pour imprimer (pdf ou papier). En fonction de l'imprimante, réduire l'échelle.</li>
+				<li id="autosave-warning" style="color:#a00;">Si le document devient trop lourd (beaucoup d'images), la sauvegarde automatique peut se désactiver.</li>
+			</ul>
 		</aside>
 
     </div>
