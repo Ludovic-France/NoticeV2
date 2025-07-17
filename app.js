@@ -31,7 +31,8 @@ function iconUrlsToPlaceholders(html) {
         idx = parseInt(idx, 10);
         if (!isNaN(idx) && IconData[idx]) {
             img.setAttribute('data-icon-index', idx);
-            img.setAttribute('src', ICON_PLACEHOLDER_PREFIX + idx);
+            img.setAttribute('data-placeholder', ICON_PLACEHOLDER_PREFIX + idx);
+            img.removeAttribute('src');
         }
     });
     return tmp.innerHTML;
@@ -42,9 +43,17 @@ function placeholdersToIconUrls(html) {
     const tmp = document.createElement('div');
     tmp.innerHTML = html;
     tmp.querySelectorAll('img[data-icon-index]').forEach(img => {
-        const idx = parseInt(img.getAttribute('data-icon-index'), 10);
+        let idx = parseInt(img.getAttribute('data-icon-index'), 10);
+        if (isNaN(idx)) {
+            const ph = img.getAttribute('data-placeholder') || '';
+            if (ph.startsWith(ICON_PLACEHOLDER_PREFIX)) {
+                idx = parseInt(ph.slice(ICON_PLACEHOLDER_PREFIX.length), 10);
+            }
+        }
         if (!isNaN(idx) && IconData[idx]) {
             img.setAttribute('src', IconData[idx].url);
+            img.setAttribute('data-icon-index', idx);
+            img.removeAttribute('data-placeholder');
         }
     });
     return tmp.innerHTML;
