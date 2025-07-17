@@ -456,7 +456,7 @@ function renderPage(page, idx) {
         docTitle.innerText = page.docTitle || "Titre du document";
         docTitle.addEventListener('blur', function () {
             pages[0].docTitle = docTitle.innerText;
-            saveToLocalStorage();
+            //saveToLocalStorage();
         });
     } else {
         docTitle.innerText = pages[0].docTitle || "Titre du document";
@@ -472,7 +472,7 @@ function renderPage(page, idx) {
         let numDiv = revBox.querySelector('.num');
         numDiv.addEventListener('blur', function () {
             pages[0].editableNum = numDiv.innerText;
-            saveToLocalStorage();
+            //saveToLocalStorage();
         });
     }
     header.appendChild(revBox);
@@ -489,7 +489,7 @@ function renderPage(page, idx) {
         title.innerText = page.title || "Notice : Untel";
         title.addEventListener('blur', function () {
             page.title = title.innerText;
-            saveToLocalStorage();
+            //saveToLocalStorage();
         });
         title.onclick = function (e) {
             selectedElement = {
@@ -524,7 +524,7 @@ function renderPage(page, idx) {
                 reader.onload = evt => {
                     page.img = evt.target.result;
                     renderDocument();
-                    saveToLocalStorage();
+                    //saveToLocalStorage();
                 };
                 reader.readAsDataURL(file);
             }
@@ -544,7 +544,7 @@ function renderPage(page, idx) {
                         img.style.maxHeight = '100%';
                         imgDrop.appendChild(img);
                         page.img = reader.result;
-                        saveToLocalStorage();
+                        //saveToLocalStorage();
                     };
                     reader.readAsDataURL(file);
                     return;
@@ -564,7 +564,7 @@ function renderPage(page, idx) {
                         img.style.maxHeight = '100%';
                         imgDrop.appendChild(img);
                         page.img = reader.result;
-						saveToLocalStorage();
+						//saveToLocalStorage();
                     };
                     reader.readAsDataURL(blob);
                 })
@@ -702,7 +702,7 @@ function renderPage(page, idx) {
                         targetDiv.appendChild(img);
                     }
                     paginatePage(idx);
-					saveToLocalStorage();
+					//saveToLocalStorage();
                 };
 
                 const insertIconIntoRTE = (targetDiv, iconIndex) => {
@@ -731,7 +731,7 @@ function renderPage(page, idx) {
                         targetDiv.appendChild(img);
                     }
                     paginatePage(idx);
-					saveToLocalStorage();
+					//saveToLocalStorage();
                 };
 
                 el.addEventListener('paste', e => {
@@ -788,7 +788,7 @@ function renderPage(page, idx) {
                 el.addEventListener('blur', function () {
                     obj.html = iconUrlsToPlaceholders(el.innerHTML);
                     paginatePage(idx);
-					saveToLocalStorage();
+					//saveToLocalStorage();
                 });
             } else if (obj.type === "table") {
                 if (obj.headerShaded === undefined)
@@ -882,7 +882,7 @@ function renderPage(page, idx) {
                         targetCell.appendChild(img);
                     }
                     paginatePage(idx);
-					saveToLocalStorage();
+					//saveToLocalStorage();
                 };
 
                 const insertIconIntoCell = (targetCell, iconIndex) => {
@@ -979,7 +979,7 @@ function renderPage(page, idx) {
                                 obj.rows[i][j] = iconUrlsToPlaceholders(td.innerHTML);
                             }
                             paginatePage(idx);
-							saveToLocalStorage();
+							//saveToLocalStorage();
                         });
 
                         td.addEventListener('paste', e => {
@@ -1201,8 +1201,8 @@ function updateAllChapterNumbers() {
             }
         } while (tocPaginationOccurred && currentPageIndexForToc < pages.length);
     }
-    	// Saving is handled elsewhere (timer or explicit save actions)
-	// saveToLocalStorage();
+	// Saving is handled elsewhere (timer or explicit save actions)
+    //saveToLocalStorage();
 }
 
 function updateSelectionClass() {
@@ -1307,7 +1307,7 @@ function addPage() {
     selectedPage = selectedPage + 1;
     renderDocument();
     updateSelectionClass();
-    saveToLocalStorage();
+    //saveToLocalStorage();
 }
 
 function deletePage() {
@@ -1332,7 +1332,7 @@ function deletePage() {
 
         selectedElement = null;
         updateAllChapterNumbers();
-        saveToLocalStorage();
+        //saveToLocalStorage();
 
         if (debug) console.log("Page " + (selectedPage + 1) + " a été supprimée.");
 
@@ -1351,7 +1351,7 @@ function toggleOrientation(idx = null) {
     orientation[idx] = (orientation[idx] === "portrait" ? "landscape" : "portrait");
     renderDocument();
     paginatePage(idx);
-    saveToLocalStorage();
+    //saveToLocalStorage();
 }
 
 /* ------- Sauvegarder / Charger JSON ------- */
@@ -1363,7 +1363,7 @@ function saveJSON() {
     a.download = "notice.json";
     a.click();
     URL.revokeObjectURL(a.href);
-    saveToLocalStorage();
+    //saveToLocalStorage();
 }
 
 function openJSONFile(input) {
@@ -1392,7 +1392,7 @@ function openJSONFile(input) {
             selectedElement = null;
             updateAllChapterNumbers();
             paginateAllPages();
-			saveToLocalStorage();
+			//saveToLocalStorage();
         } catch (e) {
             console.error("Error parsing JSON file:", e);
             alert("Erreur lors de l'ouverture du fichier JSON.");
