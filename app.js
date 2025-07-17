@@ -457,6 +457,7 @@ function renderPage(page, idx) {
         docTitle.innerText = page.docTitle || "Titre du document";
         docTitle.addEventListener('blur', function () {
             pages[0].docTitle = docTitle.innerText;
+            saveToLocalStorage();
         });
     } else {
         docTitle.innerText = pages[0].docTitle || "Titre du document";
@@ -472,6 +473,7 @@ function renderPage(page, idx) {
         let numDiv = revBox.querySelector('.num');
         numDiv.addEventListener('blur', function () {
             pages[0].editableNum = numDiv.innerText;
+            saveToLocalStorage();
         });
     }
     header.appendChild(revBox);
@@ -488,6 +490,7 @@ function renderPage(page, idx) {
         title.innerText = page.title || "Notice : Untel";
         title.addEventListener('blur', function () {
             page.title = title.innerText;
+            saveToLocalStorage();
         });
         title.onclick = function (e) {
             selectedElement = {
@@ -522,6 +525,7 @@ function renderPage(page, idx) {
                 reader.onload = evt => {
                     page.img = evt.target.result;
                     renderDocument();
+                    saveToLocalStorage();
                 };
                 reader.readAsDataURL(file);
             }
@@ -541,6 +545,7 @@ function renderPage(page, idx) {
                         img.style.maxHeight = '100%';
                         imgDrop.appendChild(img);
                         page.img = reader.result;
+                        saveToLocalStorage();
                     };
                     reader.readAsDataURL(file);
                     return;
@@ -560,6 +565,7 @@ function renderPage(page, idx) {
                         img.style.maxHeight = '100%';
                         imgDrop.appendChild(img);
                         page.img = reader.result;
+						saveToLocalStorage();
                     };
                     reader.readAsDataURL(blob);
                 })
@@ -697,6 +703,7 @@ function renderPage(page, idx) {
                         targetDiv.appendChild(img);
                     }
                     paginatePage(idx);
+					saveToLocalStorage();
                 };
 
                 const insertIconIntoRTE = (targetDiv, iconIndex) => {
@@ -725,6 +732,7 @@ function renderPage(page, idx) {
                         targetDiv.appendChild(img);
                     }
                     paginatePage(idx);
+					saveToLocalStorage();
                 };
 
                 el.addEventListener('paste', e => {
@@ -781,6 +789,7 @@ function renderPage(page, idx) {
                 el.addEventListener('blur', function () {
                     obj.html = iconUrlsToPlaceholders(el.innerHTML);
                     paginatePage(idx);
+					saveToLocalStorage();
                 });
             } else if (obj.type === "table") {
                 if (obj.headerShaded === undefined)
@@ -874,6 +883,7 @@ function renderPage(page, idx) {
                         targetCell.appendChild(img);
                     }
                     paginatePage(idx);
+					saveToLocalStorage();
                 };
 
                 const insertIconIntoCell = (targetCell, iconIndex) => {
@@ -970,6 +980,7 @@ function renderPage(page, idx) {
                                 obj.rows[i][j] = iconUrlsToPlaceholders(td.innerHTML);
                             }
                             paginatePage(idx);
+							saveToLocalStorage();
                         });
 
                         td.addEventListener('paste', e => {
