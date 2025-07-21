@@ -117,6 +117,9 @@ function normalizeColWidths(tableObj) {
 // ---- Initialisation principale au chargement ----
 window.onload = () => {
     initIcons();
+    initDocument();
+    updateAllChapterNumbers();
+    paginateAllPages();
     setupDragNDrop();
 
     // Gestion globale de la touche Shift pour le curseur et le drag&drop
