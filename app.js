@@ -1834,6 +1834,24 @@ function exportCleanHTML() {
 </head>
 <body>
 `;
+    // Préparer la répartition des éléments du sommaire s'il est paginé
+    const tocContinuationIds = new Set();
+    const tocContinuationMap = new Map();
+    pages.forEach((p, pIdx) => {
+        if (p.type === 'toc_continued' && Array.isArray(p.tocItemsToRender)) {
+            const ids = [];
+            p.tocItemsToRender.forEach(li => {
+                const a = li.querySelector('a[href^="#live-title-"]');
+                if (a) {
+                    const id = a.getAttribute('href').replace('#live-title-', '');
+                    ids.push({ id, li });
+                    tocContinuationIds.add(id);
+                }
+            });
+            tocContinuationMap.set(pIdx, ids);
+        }
+    });
+
     pages.forEach((pageData, idx) => {
         const pageOrientation = orientation[idx] || 'portrait';
         html += `<div class="page ${pageOrientation === 'landscape' ? 'landscape' : ''}">`;
@@ -1854,17 +1872,33 @@ function exportCleanHTML() {
                 const p = pages[i];
                 if (Array.isArray(p.objects)) {
                     p.objects.forEach(obj => {
-                        if (/^h[1-4]$/.test(obj.type) && (obj.originalText || obj.text) && obj.id) {
+                        if (/^h[1-4]$/.test(obj.type) && (obj.originalText || obj.text) && obj.id && !tocContinuationIds.has(obj.id)) {
                             const prefix = obj.calculatedPrefix || "";
                             const textValue = obj.originalText || obj.text || "";
                             const level = parseInt(obj.type[1]);
-                            const pageNumberOfTitleExport = i + 1;
+                            const pageNumberOfTitleExport = findPageNumberByTitleId(obj.id);
                             const anchorId = `export-title-${obj.id}`;
                             html += `<li style="margin-left: ${(level - 1) * 20}px;"><a href="#${anchorId}"><span class="toc-title">${prefix}${textValue}</span><span class="toc-page-num">${pageNumberOfTitleExport}</span></a></li>`;
                         }
                     });
                 }
             }
+            html += `</ol>`;
+        } else if (pageData.type === 'toc_continued') {
+            html += `<h2>Sommaire (suite)</h2>`;
+            html += `<ol id="table-of-contents">`;
+            const items = tocContinuationMap.get(idx) || [];
+            items.forEach(({ id, li }) => {
+                const clone = li.cloneNode(true);
+                const anchor = clone.querySelector('a[href^="#live-title-"]');
+                if (anchor) {
+                    anchor.setAttribute('href', `#export-title-${id}`);
+                    const pageNum = findPageNumberByTitleId(id);
+                    const numSpan = anchor.querySelector('.toc-page-num');
+                    if (numSpan) numSpan.textContent = pageNum;
+                }
+                html += clone.outerHTML;
+            });
             html += `</ol>`;
         } else {
             if (Array.isArray(pageData.objects)) {
