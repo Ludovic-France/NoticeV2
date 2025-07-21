@@ -1824,6 +1824,8 @@ function exportCleanHTML() {
             list-style-type: none;
             padding-left: 0; /* Pas de padding par défaut pour ol */
             font-size: 1.1em; /* Un peu plus grand pour le sommaire */
+            column-count: 2; /* Deux colonnes comme en mode édition */
+            column-gap: 20px;
         }
         #table-of-contents li {
             margin-bottom: 2px; /* Espacement entre les items du sommaire */
@@ -1873,7 +1875,7 @@ function exportCleanHTML() {
                         const anchorId = obj.id ? `export-title-${obj.id}` : '';
                         html += `<div class="${obj.type}" ${anchorId ? `id="${anchorId}"` : ''}>${prefix}${text}</div>`;
                     } else if (obj.type === "text") {
-                        html += `<div class="rte-area">${obj.html || ""}</div>`;
+                        html += `<div class="rte-area">${placeholdersToIconUrls(obj.html || "")}</div>`;
                     } else if (obj.type === "table") {
                         let tableStyle = 'width:100%;';
                         html += `<table class="page-table" style="${tableStyle}">`;
@@ -1905,12 +1907,12 @@ function exportCleanHTML() {
                                             if (cell.image) {
                                                 cellContent = `<img src="${cell.image}" style="max-width:100%; height:auto; display:block;">`;
                                             } else {
-                                                cellContent = cell.text || "";
+                                                cellContent = placeholdersToIconUrls(cell.text || "");
                                             }
                                             colspan = cell.colspan || 1;
                                             textAlign = cell.align || 'left';
                                         } else {
-                                            cellContent = cell || "";
+                                            cellContent = placeholdersToIconUrls(cell || "");
                                         }
                                         html += `<${cellTag} colspan="${colspan}" style="text-align:${textAlign};">${cellContent}</${cellTag}>`;
                                     });
