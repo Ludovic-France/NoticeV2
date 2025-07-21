@@ -8,6 +8,8 @@ const INDEX_REV = "ENR-063-04"; // Valeur fixe par défaut
 const NUM_REF = "900000"; // Modifiable uniquement page 1
 // NOUVEAU: Retrait de COLOR_DROP qui n'est plus nécessaire pour les drop-targets
 
+let rteContextRange = null; // Mémorise la sélection lors de l'ouverture du menu contextuel
+
 
 // Fonction pour générer des ID uniques pour les nouveaux objets
 function generateUniqueId() {
@@ -1267,6 +1269,12 @@ function setFontSize(sz) {
 
 function insertTextAtCursor(target, text) {
     target.focus();
+    if (rteContextRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(rteContextRange);
+        rteContextRange = null;
+    }
     document.execCommand('insertText', false, text);
 }
 
@@ -1282,7 +1290,14 @@ function showRteContextMenu(e, target) {
     e.preventDefault();
     closeRteContextMenu();
 
-    const menu = document.createElement('div');
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0 && target.contains(sel.anchorNode)) {
+        rteContextRange = sel.getRangeAt(0).cloneRange();
+    } else {
+        rteContextRange = null;
+    }
+    
+	const menu = document.createElement('div');
     menu.id = 'context-menu';
     menu.style.top = e.clientY + 'px';
     menu.style.left = e.clientX + 'px';
@@ -1294,8 +1309,8 @@ function showRteContextMenu(e, target) {
         menu.appendChild(div);
     }
 
-    addItem('• avec 3 espaces', () => insertTextAtCursor(target, '   \u2022 '));
-    addItem('Insérer 3 espaces', () => insertTextAtCursor(target, '   '));
+    addItem('Insérer •', () => insertTextAtCursor(target, '   \u2022 '));
+    addItem('Insérer tabulation', () => insertTextAtCursor(target, '   '));
     addItem('Insérer →', () => insertTextAtCursor(target, '→'));
     addItem('Insérer ←', () => insertTextAtCursor(target, '←'));
     addItem('Insérer ↔', () => insertTextAtCursor(target, '↔'));
