@@ -765,8 +765,13 @@ function renderPage(page, idx) {
                 });
 
                 el.addEventListener('contextmenu', e => {
-                    showRteContextMenu(e, el);
-                    setTimeout(() => el.focus(), 0);
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        showRteContextMenu(e, el);
+                        setTimeout(() => el.focus(), 0);
+                    } else {
+                        closeRteContextMenu();
+                    }
                 });
 
                 el.addEventListener('blur', function () {
@@ -1282,12 +1287,13 @@ function closeRteContextMenu() {
     const menu = document.getElementById('context-menu');
     if (menu) {
         menu.remove();
-        document.removeEventListener('click', closeRteContextMenu);
+		// Remove both listeners in case the previous menu used another event
+		document.removeEventListener('mousedown', closeRteContextMenu);
+		document.removeEventListener('click', closeRteContextMenu);
     }
 }
 
 function showRteContextMenu(e, target) {
-    e.preventDefault();
     closeRteContextMenu();
 
     const sel = window.getSelection();
@@ -1319,7 +1325,7 @@ function showRteContextMenu(e, target) {
     addItem('Fond rouge clair', () => { target.style.background = '#ffcccc'; });
 
     document.body.appendChild(menu);
-    document.addEventListener('click', closeRteContextMenu);
+    document.addEventListener('mousedown', closeRteContextMenu);
 }
 
 
