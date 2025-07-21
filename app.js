@@ -9,6 +9,7 @@ const NUM_REF = "900000"; // Modifiable uniquement page 1
 // NOUVEAU: Retrait de COLOR_DROP qui n'est plus nécessaire pour les drop-targets
 
 let rteContextRange = null; // Mémorise la sélection lors de l'ouverture du menu contextuel
+let rteMenuOutsideHandler = null; // Handler pour fermer le menu contextuel
 
 
 // Fonction pour générer des ID uniques pour les nouveaux objets
@@ -1287,9 +1288,10 @@ function closeRteContextMenu() {
     const menu = document.getElementById('context-menu');
     if (menu) {
         menu.remove();
-		// Remove both listeners in case the previous menu used another event
-		document.removeEventListener('mousedown', closeRteContextMenu);
-		document.removeEventListener('click', closeRteContextMenu);
+	}
+    if (rteMenuOutsideHandler) {
+        document.removeEventListener('mousedown', rteMenuOutsideHandler);
+        rteMenuOutsideHandler = null;
     }
 }
 
@@ -1323,12 +1325,16 @@ function showRteContextMenu(e, target) {
     menu.appendChild(document.createElement('hr'));
     addItem('Fond bleu ciel', () => { target.style.background = '#cceeff'; });
     addItem('Fond rouge clair', () => { target.style.background = '#ffcccc'; });
+	addItem('Fond par défaut', () => { target.style.background = '#fafbff'; });
 
     document.body.appendChild(menu);
-    document.addEventListener('mousedown', closeRteContextMenu);
+    rteMenuOutsideHandler = function(ev) {
+        if (!menu.contains(ev.target)) {
+            closeRteContextMenu();
+        }
+    };
+    document.addEventListener('mousedown', rteMenuOutsideHandler);
 }
-
-
 
 
 /* ------- Drag & drop pour objets outils ------- */
