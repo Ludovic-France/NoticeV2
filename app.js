@@ -367,7 +367,7 @@ function handleDropInChapter(event, pageIdx) {
         if (["h1", "h2", "h3", "h4"].includes(type))
             newObj = { type: type, text: type.toUpperCase(), originalText: type.toUpperCase(), id: generateUniqueId() };
         else if (type === "text")
-            newObj = { type: "text", html: "Zone de texte" };
+            newObj = { type: "text", html: "Zone de texte", bgColor: "" };
         else if (type === "table")
             newObj = { type: "table", rows: [["", "", ""], ["", "", ""], ["", "", ""]] };
 
@@ -659,6 +659,9 @@ function renderPage(page, idx) {
                 el.contentEditable = "true";
                 el.className = "rte-area";
                 el.innerHTML = placeholdersToIconUrls(obj.html || "");
+                if (obj.bgColor) {
+                    el.style.background = obj.bgColor;
+                }
 
                 const insertImageIntoRTE = (targetDiv, imageSrc) => {
                     const img = document.createElement('img');
@@ -768,7 +771,7 @@ function renderPage(page, idx) {
                 el.addEventListener('contextmenu', e => {
                     if (e.ctrlKey) {
                         e.preventDefault();
-                        showRteContextMenu(e, el);
+                        showRteContextMenu(e, el, obj);
                         setTimeout(() => el.focus(), 0);
                     } else {
                         closeRteContextMenu();
@@ -777,6 +780,7 @@ function renderPage(page, idx) {
 
                 el.addEventListener('blur', function () {
                     obj.html = iconUrlsToPlaceholders(el.innerHTML);
+					obj.bgColor = el.style.background || '';
                     paginatePage(idx);
                 });
             } else if (obj.type === "table") {
@@ -1295,7 +1299,7 @@ function closeRteContextMenu() {
     }
 }
 
-function showRteContextMenu(e, target) {
+function showRteContextMenu(e, target, obj) {
     closeRteContextMenu();
 
     const sel = window.getSelection();
@@ -1323,9 +1327,9 @@ function showRteContextMenu(e, target) {
     addItem('Insérer ←', () => insertTextAtCursor(target, '←'));
     addItem('Insérer ↔', () => insertTextAtCursor(target, '↔'));
     menu.appendChild(document.createElement('hr'));
-    addItem('Fond bleu ciel', () => { target.style.background = '#cceeff'; });
-    addItem('Fond rouge clair', () => { target.style.background = '#ffcccc'; });
-	addItem('Fond par défaut', () => { target.style.background = '#fafbff'; });
+    addItem('Fond par défaut', () => { target.style.background = ''; if (obj) obj.bgColor = ''; });
+    addItem('Fond bleu ciel', () => { target.style.background = '#cceeff'; if (obj) obj.bgColor = '#cceeff'; });
+    addItem('Fond rouge clair', () => { target.style.background = '#ffcccc'; if (obj) obj.bgColor = '#ffcccc'; });
 
     document.body.appendChild(menu);
     rteMenuOutsideHandler = function(ev) {
@@ -1645,8 +1649,8 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         obj.headerShaded = !obj.headerShaded;
     }));
     menu.appendChild(document.createElement('hr'));
-	menu.appendChild(menuItem("|↔| Forcer largeur colonne à 60px", () => {
-		obj.colWidths[colIdx] = 60;
+	menu.appendChild(menuItem("|↔| Forcer largeur colonne à 55px", () => {
+		obj.colWidths[colIdx] = 55;
 	}));
 	menu.appendChild(document.createElement('hr'));
     menu.appendChild(structuralItem("➕|| Ajouter colonne à droite", () => {
@@ -1855,8 +1859,8 @@ function exportCleanHTML() {
             height: auto !important;
             object-fit: contain;
         }
-        .rte-area { /* Styles pour les zones de texte enrichi */
-            background: #fff !important;
+        .rte-area { /* Styles pour les zones de texte enrichi */␊
+            background: #fff;
             border: none !important;
             min-height: auto; /* Laisser le contenu déterminer la hauteur */
             padding: 0; /* Le padding est déjà géré par .page ou .content */
@@ -2003,7 +2007,9 @@ function exportCleanHTML() {
                         const anchorId = obj.id ? `export-title-${obj.id}` : '';
                         html += `<div class="${obj.type}" ${anchorId ? `id="${anchorId}"` : ''}>${prefix}${text}</div>`;
                     } else if (obj.type === "text") {
-                        html += `<div class="rte-area">${placeholdersToIconUrls(obj.html || "")}</div>`;
+                        const bg = (obj.bgColor === '#cceeff' || obj.bgColor === '#ffcccc') ? obj.bgColor : '';
+                        const styleAttr = bg ? ` style="background:${bg};"` : '';
+                        html += `<div class="rte-area"${styleAttr}>${placeholdersToIconUrls(obj.html || "")}</div>`;
                     } else if (obj.type === "table") {
                         let tableStyle = 'width:100%;';
                         html += `<table class="page-table" style="${tableStyle}">`;
