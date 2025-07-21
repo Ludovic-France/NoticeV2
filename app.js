@@ -604,7 +604,7 @@ function renderPage(page, idx) {
 
         let tocOl = document.createElement("ol");
         tocOl.id = "table-of-contents";
-        tocOl.style.fontSize = "1.1em";
+        tocOl.style.fontSize = "1em";
         tocOl.style.margin = "0 0 0 24px";
         tocOl.style.padding = "0";
 
@@ -1902,7 +1902,7 @@ function exportCleanHTML() {
         #table-of-contents {
             list-style-type: none;
             padding-left: 0; /* Pas de padding par défaut pour ol */
-            font-size: 1.1em; /* Un peu plus grand pour le sommaire */
+            font-size: 1em; /* Un peu plus grand pour le sommaire */
             column-count: 2; /* Deux colonnes comme en mode édition */
             column-gap: 20px;
         }
