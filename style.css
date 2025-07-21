@@ -376,13 +376,17 @@ body.shift-key-down .draggable-on-shift:active {
 
 /* Styles pour la table des matières en mode édition */
 #table-of-contents {
-	list-style-type: none;
+    list-style-type: none;
     padding-left: 0;
-	max-height: 946px;
+    max-height: 946px;
+    column-count: 2;
+    column-gap: 40px;
+	font-size: 1em; 
 }
 
 #table-of-contents li {
     margin-bottom: 5px;
+    break-inside: avoid;
 }
 
 #table-of-contents a {
@@ -423,6 +427,15 @@ body.shift-key-down .draggable-on-shift:active {
 
     #tools, #controls, .drag-handle, #drop-indicator {
         display: none !important;
+    }
+
+    #table-of-contents {
+        column-count: 2 !important;
+        column-gap: 40px !important;
+    }
+
+    #table-of-contents li {
+        break-inside: avoid !important;
     }
 
     #container {
