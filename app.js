@@ -114,6 +114,20 @@ function normalizeColWidths(tableObj) {
     }
 }
 
+function findPageNumberByTitleId(id) {
+    for (let i = 0; i < pages.length; i++) {
+        const page = pages[i];
+        if (Array.isArray(page.objects)) {
+            for (const obj of page.objects) {
+                if (obj.id === id) {
+                    return i + 1; // page numbers are 1-based
+                }
+            }
+        }
+    }
+    return null;
+}
+
 // ---- Initialisation principale au chargement ----
 window.onload = () => {
     initIcons();
@@ -593,6 +607,15 @@ function renderPage(page, idx) {
 
         if (Array.isArray(page.tocItemsToRender)) {
             page.tocItemsToRender.forEach(liNode => {
+                const anchor = liNode.querySelector('a[href^="#live-title-"]');
+                if (anchor) {
+                    const id = anchor.getAttribute('href').replace('#live-title-', '');
+                    const pageNum = findPageNumberByTitleId(id);
+                    if (pageNum !== null) {
+                        const numSpan = anchor.querySelector('.toc-page-num');
+                        if (numSpan) numSpan.textContent = pageNum;
+                    }
+                }
                 tocOl.appendChild(liNode);
             });
         }
