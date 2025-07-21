@@ -762,6 +762,11 @@ function renderPage(page, idx) {
                     }
                 });
 
+                el.addEventListener('contextmenu', e => {
+                    showRteContextMenu(e, el);
+                    setTimeout(() => el.focus(), 0);
+                });
+
                 el.addEventListener('blur', function () {
                     obj.html = iconUrlsToPlaceholders(el.innerHTML);
                     paginatePage(idx);
@@ -1260,6 +1265,49 @@ function setFontSize(sz) {
 }
 
 
+function insertTextAtCursor(target, text) {
+    target.focus();
+    document.execCommand('insertText', false, text);
+}
+
+function closeRteContextMenu() {
+    const menu = document.getElementById('context-menu');
+    if (menu) {
+        menu.remove();
+        document.removeEventListener('click', closeRteContextMenu);
+    }
+}
+
+function showRteContextMenu(e, target) {
+    e.preventDefault();
+    closeRteContextMenu();
+
+    const menu = document.createElement('div');
+    menu.id = 'context-menu';
+    menu.style.top = e.clientY + 'px';
+    menu.style.left = e.clientX + 'px';
+
+    function addItem(label, action) {
+        const div = document.createElement('div');
+        div.textContent = label;
+        div.onclick = () => { action(); closeRteContextMenu(); };
+        menu.appendChild(div);
+    }
+
+    addItem('• avec 3 espaces', () => insertTextAtCursor(target, '   \u2022 '));
+    addItem('Insérer 3 espaces', () => insertTextAtCursor(target, '   '));
+    addItem('Insérer →', () => insertTextAtCursor(target, '→'));
+    addItem('Insérer ←', () => insertTextAtCursor(target, '←'));
+    addItem('Insérer ↔', () => insertTextAtCursor(target, '↔'));
+    menu.appendChild(document.createElement('hr'));
+    addItem('Fond bleu ciel', () => { target.style.background = '#cceeff'; });
+    addItem('Fond rouge clair', () => { target.style.background = '#ffcccc'; });
+
+    document.body.appendChild(menu);
+    document.addEventListener('click', closeRteContextMenu);
+}
+
+
 
 
 /* ------- Drag & drop pour objets outils ------- */
@@ -1691,7 +1739,7 @@ function exportCleanHTML() {
             box-shadow: none !important;
                         border: 1px solid #555 !important;
             border-radius: 3px !important;
-            margin: 0 auto 10mm auto !important; /* Marge en bas pour séparation visuelle, auto pour centrer */
+            margin: 5mm auto 10mm auto !important; /* Marge en bas pour séparation visuelle, auto pour centrer */
             padding: 10mm 15mm 10mm 15mm !important; /* Marges A4 approx (H, D, B, G) */
             overflow: hidden !important;
             display: flex !important;
