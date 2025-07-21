@@ -1830,6 +1830,25 @@ function exportCleanHTML() {
         #table-of-contents li {
             margin-bottom: 2px; /* Espacement entre les items du sommaire */
         }
+        #table-of-contents a {
+            display: flex;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            padding: 0;
+        }
+        #table-of-contents .toc-title {
+            text-align: left;
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        #table-of-contents .toc-page-num {
+            text-align: right;
+            min-width: 30px;
+            padding-left: 10px;
+            font-weight: normal;
+            color: #555;
+        }
     </style>
 </head>
 <body>
