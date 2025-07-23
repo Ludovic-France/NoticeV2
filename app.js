@@ -461,7 +461,7 @@ function renderPage(page, idx) {
     if (idx === 0) {
         let title = document.createElement('div');
         title.contentEditable = "true";
-        title.style.fontSize = "30pt";
+        title.style.fontSize = "24pt";
         title.className = "doc-title";
         title.innerText = page.title || "Notice : Untel";
         title.addEventListener('blur', function () {
@@ -1630,6 +1630,7 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         item.onmouseover = () => item.style.background = "#eef";
         item.onmouseleave = () => item.style.background = "#fff";
         item.onclick = () => {
+			flushPendingEdits();
             fn();
             menu.remove();
             renderDocument();
@@ -1642,7 +1643,7 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         item.style.padding = "6px 18px"; item.style.cursor  = "pointer";
         item.onmouseover  = () => item.style.background = "#eef";
         item.onmouseleave = () => item.style.background = "#fff";
-        item.onclick = () => { fn(); menu.remove(); renderDocument(); };
+        item.onclick = () => { flushPendingEdits(); fn(); menu.remove(); renderDocument(); };
         return item;
     }
     menu.appendChild(menuItem(obj.headerShaded ? "Désactiver gris de la 1ʳᵉ ligne" : "Griser la 1ʳᵉ ligne", () => {
@@ -1747,6 +1748,7 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
 }
 
 function exportCleanHTML() {
+    flushPendingEdits();
     let html = `
 <!DOCTYPE html>
 <html lang="fr">
@@ -1894,7 +1896,7 @@ function exportCleanHTML() {
 
         /* Styles spécifiques pour la page de garde (idx === 0) */
         .cover-title {
-            font-size: 30pt;
+            font-size: 24pt;
             text-align: center;
             margin: 40px 0; /* Espacement pour le titre de la page de garde */
         }
