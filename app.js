@@ -964,9 +964,10 @@ function renderPage(page, idx) {
                         td.style.textAlign = align;
 
                         td.addEventListener('blur', () => {
-                            if (typeof cellData === "object" && cellData !== null) {
-                                cellData.text = iconUrlsToPlaceholders(td.innerHTML);
-                                delete cellData.image;
+                            const cell = obj.rows[i][j];
+                            if (typeof cell === "object" && cell !== null) {
+                                cell.text = iconUrlsToPlaceholders(td.innerHTML);
+                                delete cell.image;
                             } else {
                                 obj.rows[i][j] = iconUrlsToPlaceholders(td.innerHTML);
                             }
