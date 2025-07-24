@@ -60,6 +60,43 @@ function placeholdersToIconUrls(html) {
     return tmp.innerHTML;
 }
 
+function removeColResizers(html) {
+    if (!html) return html || "";
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    tmp.querySelectorAll('.col-resizer').forEach(el => el.remove());
+    return tmp.innerHTML;
+}
+
+function convertFontTags(html) {
+    if (!html) return html || "";
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    const sizeMap = {
+        1: '8pt',
+        2: '10pt',
+        3: '12pt',
+        4: '14pt',
+        5: '18pt',
+        6: '24pt',
+        7: '36pt'
+    };
+    tmp.querySelectorAll('font').forEach(font => {
+        const span = document.createElement('span');
+        const size = font.getAttribute('size');
+        const color = font.getAttribute('color');
+        const face = font.getAttribute('face');
+        if (size && sizeMap[size]) {
+            span.style.fontSize = sizeMap[size];
+        }
+        if (color) span.style.color = color;
+        if (face) span.style.fontFamily = face;
+        while (font.firstChild) span.appendChild(font.firstChild);
+        font.replaceWith(span);
+    });
+    return tmp.innerHTML;
+}
+
 function migrateIconPlaceholders() {
     if (typeof IconData === "undefined") return;
     pages.forEach(page => {
@@ -967,12 +1004,13 @@ function renderPage(page, idx) {
                         td.style.textAlign = align;
 
                         td.addEventListener('blur', () => {
+                            const cleanHtml = removeColResizers(td.innerHTML);
                             const cell = obj.rows[i][j];
                             if (typeof cell === "object" && cell !== null) {
-                                cell.text = iconUrlsToPlaceholders(td.innerHTML);
+                                cell.text = iconUrlsToPlaceholders(cleanHtml);
                                 delete cell.image;
                             } else {
-                                obj.rows[i][j] = iconUrlsToPlaceholders(td.innerHTML);
+                                obj.rows[i][j] = iconUrlsToPlaceholders(cleanHtml);
                             }
                             paginatePage(idx);
                         });
@@ -1440,9 +1478,26 @@ function openJSONFile(input) {
     let reader = new FileReader();
     reader.onload = evt => {
         try {
-            let data = JSON.parse(evt.target.result);
+			let data = JSON.parse(evt.target.result);
             pages = data.pages || [];
             orientation = data.orientation || [];
+            pages.forEach(p => {
+                if (Array.isArray(p.objects)) {
+                    p.objects.forEach(obj => {
+                        if (obj.type === 'table' && Array.isArray(obj.rows)) {
+                            obj.rows.forEach(row => {
+                                row.forEach((cell, ci) => {
+                                    if (cell && typeof cell === 'object' && typeof cell.text === 'string') {
+                                        cell.text = removeColResizers(cell.text);
+                                    } else if (typeof cell === 'string') {
+                                        row[ci] = removeColResizers(cell);
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
+            });
             migrateIconPlaceholders();
             pages.forEach(p => {
                 if (Array.isArray(p.objects)) {
@@ -2071,7 +2126,8 @@ function exportCleanHTML() {
                     } else if (obj.type === "text") {
                         const bg = (obj.bgColor === '#cceeff' || obj.bgColor === '#ffcccc') ? obj.bgColor : '';
                         const styleAttr = bg ? ` style="background:${bg};"` : '';
-                        html += `<div class="rte-area"${styleAttr}>${placeholdersToIconUrls(obj.html || "")}</div>`;
+                        //html += `<div class="rte-area"${styleAttr}>${convertFontTags(placeholdersToIconUrls(obj.html || ""))}</div>`;
+						html += `<div class="rte-area"${styleAttr}>${convertFontTags(placeholdersToIconUrls(removeColResizers(obj.html || "")))}</div>`;
                     } else if (obj.type === "table") {
                         let tableStyle = 'width:100%;';
                         const borderClass = obj.bordered === false ? ' no-border' : '';
@@ -2104,12 +2160,12 @@ function exportCleanHTML() {
                                             if (cell.image) {
                                                 cellContent = `<img src="${cell.image}" style="max-width:100%; height:auto; display:block;">`;
                                             } else {
-                                                cellContent = placeholdersToIconUrls(cell.text || "");
+                                                cellContent = convertFontTags(placeholdersToIconUrls(removeColResizers(cell.text || "")));
                                             }
                                             colspan = cell.colspan || 1;
                                             textAlign = cell.align || 'left';
                                         } else {
-                                            cellContent = placeholdersToIconUrls(cell || "");
+                                            cellContent = convertFontTags(placeholdersToIconUrls(removeColResizers(cell || "")));
                                         }
                                         html += `<${cellTag} colspan="${colspan}" style="text-align:${textAlign};">${cellContent}</${cellTag}>`;
                                     });
