@@ -1771,7 +1771,7 @@ function exportCleanHTML() {
             max-height: 297mm;
             box-sizing: border-box !important;
             box-shadow: none !important;
-                        border: 1px solid #555 !important;
+            border: 1px solid #555 !important;
             border-radius: 3px !important;
             margin: 5mm auto 10mm auto !important; /* Marge en bas pour séparation visuelle, auto pour centrer */
             padding: 10mm 15mm 10mm 15mm !important; /* Marges A4 approx (H, D, B, G) */
@@ -1786,16 +1786,14 @@ function exportCleanHTML() {
             margin-bottom: 0 !important;
         }
         .page.landscape {
-            /*width: 210mm !important;
-            min-height: 297mm !important;
-            max-width: 210mm !important;
-            max-height: 297mm !important;*/
             width: 297mm !important;
             min-height: 210mm !important;
             max-width: 297mm !important;
             max-height: 210mm !important;
-            transform: rotate(-90deg) translate(0, -120.714%);
+            /*transform: rotate(-90deg) translate(0, -120.714%);
             transform-origin: top right;
+			margin-bottom: 87mm !important;
+			margin-top: 87mm !important;*/
         }
         .header {
             background: #fff !important;
@@ -1937,6 +1935,25 @@ function exportCleanHTML() {
             font-weight: normal;
             color: #555;
         }
+		@media print {
+			.page{
+				border: none !important;
+			}
+			.page.landscape{
+				width: 297mm !important;
+				min-height: 210mm !important;
+				max-width: 297mm !important;
+				max-height: 210mm !important;
+				transform: rotate(-90deg) translate(0, -140%) !important;
+				/*transform: rotate(-90deg) translate(0, -120.714%);*/
+				transform-origin: top right;
+				margin-bottom: 87mm !important;
+				/*margin-top: 87mm !important;*/
+			}
+			.page .chapter-title, .page h1, .page h2, .page h3, .page h4 {
+				font-weight: bold !important;
+			}
+		}
     </style>
 </head>
 <body>
