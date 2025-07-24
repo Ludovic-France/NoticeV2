@@ -369,7 +369,7 @@ function handleDropInChapter(event, pageIdx) {
         else if (type === "text")
             newObj = { type: "text", html: "Zone de texte", bgColor: "" };
         else if (type === "table")
-            newObj = { type: "table", rows: [["", "", ""], ["", "", ""], ["", "", ""]] };
+            newObj = { type: "table", rows: [["", "", ""], ["", "", ""], ["", "", ""]], bordered: true };
 
         if (newObj) {
             destPage.objects.splice(dropIndex, 0, newObj);
@@ -786,12 +786,15 @@ function renderPage(page, idx) {
             } else if (obj.type === "table") {
                 if (obj.headerShaded === undefined)
                     obj.headerShaded = false;
+                if (obj.bordered === undefined)
+                    obj.bordered = true;
                 el = document.createElement('div');
                 el.className = "table-container";
                 let containerWidth = orientation[idx] === "portrait" ? 710 : 1038;
 				
                 let table = document.createElement('table');
                 table.className = "page-table";
+                if (!obj.bordered) table.classList.add('no-border');
                 table.classList.add('draggable-on-shift');
                 table.setAttribute('draggable', 'true');
 
@@ -1300,6 +1303,22 @@ function closeRteContextMenu() {
     }
 }
 
+function constrainPopupToViewport(menu) {
+    const rect = menu.getBoundingClientRect();
+    let left = parseFloat(menu.style.left) || 0;
+    let top = parseFloat(menu.style.top) || 0;
+    if (rect.right > window.innerWidth) {
+        left = Math.max(0, window.innerWidth - rect.width - 5);
+    }
+    if (rect.bottom > window.innerHeight) {
+        top = Math.max(0, window.innerHeight - rect.height - 5);
+    }
+    if (left < 0) left = 0;
+    if (top < 0) top = 0;
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+}
+
 function showRteContextMenu(e, target, obj) {
     closeRteContextMenu();
 
@@ -1333,6 +1352,7 @@ function showRteContextMenu(e, target, obj) {
     addItem('Fond rouge clair', () => { target.style.background = '#ffcccc'; if (obj) obj.bgColor = '#ffcccc'; });
 
     document.body.appendChild(menu);
+    constrainPopupToViewport(menu);
     rteMenuOutsideHandler = function(ev) {
         if (!menu.contains(ev.target)) {
             closeRteContextMenu();
@@ -1650,11 +1670,22 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
     menu.appendChild(menuItem(obj.headerShaded ? "Désactiver gris de la 1ʳᵉ ligne" : "Griser la 1ʳᵉ ligne", () => {
         obj.headerShaded = !obj.headerShaded;
     }));
+    menu.appendChild(menuItem(obj.bordered === false ? "Afficher bordures" : "Masquer bordures", () => {
+        obj.bordered = !obj.bordered;
+    }));
+    menu.appendChild(menuItem("1x2", () => {
+        const pageDiv = e.currentTarget.closest('.page');
+        const pagesList = Array.from(document.querySelectorAll('#pages-container .page'));
+        const pageIdx = pagesList.indexOf(pageDiv);
+        const cWidth = orientation[pageIdx] === 'portrait' ? 710 : 1038;
+        obj.rows = [["", ""]];
+        obj.colWidths = [55, cWidth - 55];
+    }));
     menu.appendChild(document.createElement('hr'));
-	menu.appendChild(menuItem("|↔| Forcer largeur colonne à 55px", () => {
-		obj.colWidths[colIdx] = 55;
-	}));
-	menu.appendChild(document.createElement('hr'));
+        menu.appendChild(menuItem("|↔| Forcer largeur colonne à 55px", () => {
+                obj.colWidths[colIdx] = 55;
+        }));
+        menu.appendChild(document.createElement('hr'));
     menu.appendChild(structuralItem("➕|| Ajouter colonne à droite", () => {
         obj.rows.forEach(row => row.splice(colIdx + 1, 0, ""));
         const w = obj.colWidths[colIdx]; // Problème potentiel si colIdx est la dernière
@@ -1740,6 +1771,7 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
         }));
     }
     document.body.appendChild(menu);
+	constrainPopupToViewport(menu);
     document.addEventListener('mousedown', function hideMenu(ev) {
         if (menu && !menu.contains(ev.target)) { // Vérifier si menu existe encore
             menu.remove();
@@ -1884,6 +1916,10 @@ function exportCleanHTML() {
             word-break: break-word;
             vertical-align: middle;
             text-align: left;
+        }
+        .page-table.no-border th,
+        .page-table.no-border td {
+            border: none !important;
         }
         .page-table th {
             background: #eee !important;
@@ -2038,7 +2074,8 @@ function exportCleanHTML() {
                         html += `<div class="rte-area"${styleAttr}>${placeholdersToIconUrls(obj.html || "")}</div>`;
                     } else if (obj.type === "table") {
                         let tableStyle = 'width:100%;';
-                        html += `<table class="page-table" style="${tableStyle}">`;
+                        const borderClass = obj.bordered === false ? ' no-border' : '';
+                        html += `<table class="page-table${borderClass}" style="${tableStyle}">`;
                         if (obj.colWidths && Array.isArray(obj.colWidths) && obj.colWidths.length > 0) {
                             html += `<colgroup>`;
                             let totalWidthDefined = obj.colWidths.reduce((sum, w) => sum + parseFloat(w || 0), 0);
