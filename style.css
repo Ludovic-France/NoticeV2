@@ -195,15 +195,19 @@ main#document {
     background: #d1e0fa;
 }
 .page-table td, .page-table th {
-	border: 1px solid #888;
+    border: 1px solid #888;
     padding: 4px 2px;
     vertical-align: middle;
     text-align: left;
-    min-width: 60px;
-	height: auto;
+    min-width: 55px;
+    height: auto;
     position: relative;
     border: 1px solid #888;
     word-break: break-word;
+}
+.page-table.no-border td,
+.page-table.no-border th {
+    border: none;
 }
 .page .chapter-title.h1 {
     margin: 20px 0 10px 0;
