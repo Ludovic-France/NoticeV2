@@ -1786,10 +1786,12 @@ function exportCleanHTML() {
             margin-bottom: 0 !important;
         }
         .page.landscape {
-            width: 297mm !important;
-            min-height: 210mm !important;
-            max-width: 297mm !important;
-            max-height: 210mm !important;
+            width: 210mm !important;
+            min-height: 297mm !important;
+            max-width: 210mm !important;
+            max-height: 297mm !important;
+            transform: rotate(90deg) translate(0, -100%);
+            transform-origin: top left;
         }
         .header {
             background: #fff !important;
