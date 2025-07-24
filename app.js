@@ -1673,11 +1673,11 @@ function showTableMenu(e, obj, rowIdx, colIdx) {
     menu.appendChild(menuItem(obj.bordered === false ? "Afficher bordures" : "Masquer bordures", () => {
         obj.bordered = !obj.bordered;
     }));
+    const pageDiv = e.currentTarget ? e.currentTarget.closest('.page') : null;
+    const pagesList = Array.from(document.querySelectorAll('#pages-container .page'));
+    const pageIdx = pageDiv ? pagesList.indexOf(pageDiv) : -1;
+    const cWidth = orientation[pageIdx] === 'portrait' ? 710 : 1038;
     menu.appendChild(menuItem("1x2", () => {
-        const pageDiv = e.currentTarget.closest('.page');
-        const pagesList = Array.from(document.querySelectorAll('#pages-container .page'));
-        const pageIdx = pagesList.indexOf(pageDiv);
-        const cWidth = orientation[pageIdx] === 'portrait' ? 710 : 1038;
         obj.rows = [["", ""]];
         obj.colWidths = [55, cWidth - 55];
     }));
