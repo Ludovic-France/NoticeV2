@@ -128,7 +128,7 @@ main#document {
 .header .doc-title {
     flex: 1;
     margin: 0 18px;
-    font-size: 30pt;
+    font-size: 24pt;
     font-weight: bold;
     text-align: center;
 }
@@ -481,10 +481,12 @@ body.shift-key-down .draggable-on-shift:active {
     }
 
     .page.landscape {
-        width: 297mm !important;
-        min-height: 210mm !important;
-        max-width: 297mm !important;
-        max-height: 210mm !important;
+        width: 210mm !important;
+        min-height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        transform: rotate(-90deg) translate(0, -100%);
+        transform-origin: top left;
     }
 
     .header {
